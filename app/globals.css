@@ -5,6 +5,11 @@
 :root {
   --background: #ffffff;
   --foreground: #171717;
+  --text: #ABB8C4;
+  --btn-green: #24AE7C;
+  --btn-red: #F24E43;
+  --popup: #1A1D21F5;
+  --field: #1A1D21;
 }
 
 @media (prefers-color-scheme: dark) {
@@ -20,8 +25,95 @@ body {
   font-family: Arial, Helvetica, sans-serif;
 }
 
-@layer utilities {
-  .text-balance {
-    text-wrap: balance;
-  }
+.text-color {
+  color: var(--text);
+}
+
+.bg {
+  background-color: #171717;
+}
+
+.input {
+  padding: 6px 10px;
+  border: 1px;
+  width: 30rem;
+}
+
+.login-btn {
+  background-color: var(--btn-green);
+}
+
+.cancel-btn{
+  background-color: var(--btn-red);
+}
+
+.text-green {
+  color: var(--btn-green);
+}
+
+.bg-img {
+  background-image: url("./public/img1.png");
+  background-repeat: no-repeat;
+  background-position: right;
+}
+
+.otp {
+  background: var(--popup);
+}
+
+/* dashoborad */
+.item {
+  background: linear-gradient(117.58deg, rgba(215, 237, 237, 0.16) -47.79%, rgba(204, 235, 235, 0) 100%);
+  border-top: 1px solid #FFFFFF14
+}
+
+th {
+  text-align: left;
+  padding: 8px 16px;
+}
+
+td {
+  text-align: left;
+  padding: 18px 16px;
+}
+
+.scheduled {
+  background: #0D2A1F;
+}
+
+.cancelled {
+  background: #f10000;
+}
+
+.pending {
+  background: #3606f3;
+}
+
+.pagination-btn {
+  box-shadow: 0px 1px 2px 0px #1018280D;
+}
+
+.bg-light {
+  background: #111517;
+}
+
+.bg-dark {
+  background: #1a1d20;
+}
+
+.popup {
+  border-top: 1px solid #FFFFFF14;
+  box-shadow: 0px 8px 12px 0px #FFFFFF0A inset;
+
+  box-shadow: 0px 24px 64px -16px #0000003D;
+
+  box-shadow: 16px 24px 64px -24px #FFFFFF0A inset;
+}
+
+.col1{
+  background: var(--field);
+}
+
+.appo-sch{
+  border: 1px solid #363A3D;
 }
