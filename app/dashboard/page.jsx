@@ -14,41 +14,53 @@ import CancelAppointment from "../_components/CancelAppointment";
 import axios from "axios";
 import { formatDate } from "../lib/formatDate";
 import ConfirmAppointment from "../_components/ConfirmAppointment";
+import { useRouter } from "next/navigation";
 
 const dashboard = () => {
 
     const [isOpen, setIsOpen] = useState(false);
     const [isCancelTabOpen, setIsCancelTabOpen] = useState(false);
-    const [page, setPage] = useState(0);
-    const [totalPage, setTotalPage] = useState(2);
+    const [page, setPage] = useState(1);
+    const [hasNextPage, setHasNextPage] = useState(false);
     const [totalScheduleData, setTotalScheduleData] = useState(null);
     const [totalPendingData, setTotalPendingData] = useState(null);
     const [totalCancelData, setTotalCancelData] = useState(null);
     const [data, setData] = useState([]);
     const [confirmPatientData, setConfirmPatientData] = useState(null);
     const [update, setUpdate] = useState(false);
+    const router = useRouter();
 
-    async function fetchData() {
-        let { data } = await axios.get("/api/dashboard");
-        setData(data.data);
-        let pending = data.data.filter(ele => ele.status == "pending");
-        let confirm = data.data.filter(ele => ele.status == "confirm");
-        let cancel = data.data.filter(ele => ele.status == "cancel");
-        setTotalScheduleData(confirm.length);
-        setTotalPendingData(pending.length);
-        setTotalCancelData(cancel.length);
+    async function fetchData(token) {
+        let { data } = await axios.post(`/api/dashboard?page=${page}`,{token});
+        if(data.success){
+            setTotalScheduleData(data?.confirm);
+            setTotalPendingData(data?.pending);
+            setTotalCancelData(data?.cancel);
+            setHasNextPage(data?.hasNextPage);
+            setData(data?.data);
+        }else{
+            sessionStorage.clear("carePulseAdmin");
+            router.push("/");
+            alert("Invalid access")
+        }
     }
 
     useEffect(() => {
-        fetchData();
+        const token = sessionStorage.getItem("carePulseAdmin");
+        if (token) {
+            fetchData(token);
+        } else {
+            router.push('/');
+            // api pr bhe validation lagao
+        }
+
         return () => {
             setTotalScheduleData(null);
             setTotalPendingData(null);
             setTotalCancelData(null);
         }
-    }, [update]);
+    }, [update, page]);
 
-    // write useEffect for pagination on page state value increase or decrease
 
     return (
         <div className="dashboard-main min-h-screen">
@@ -167,7 +179,7 @@ const dashboard = () => {
                                     </td>
                                     <td className=" text-sm">{formatDate(elem.selectedDate)}</td>
                                     <td className="w-auto">
-                                        
+
                                         <div className={`flex items-center justify-start ${elem.status == 'pending' ? 'pending' : elem.status == 'cancel' ? 'cancelled' : 'scheduled'} rounded-3xl w-28 px-2 gap-x-2`}>
                                             <Image src={elem.status == 'pending' ? pending : elem.status == 'cancel' ? x : check} alt="status" width={18} />
                                             <span className=" font-bold">{elem.status}</span>
@@ -186,7 +198,7 @@ const dashboard = () => {
                                             elem.status === "pending" ? <div className="flex gap-x-4">
                                                 <button className="text-green-400" onClick={() => { setIsOpen(true); setConfirmPatientData(elem) }}>Schedule</button>
                                                 <button className="text-red-400" onClick={() => { setIsCancelTabOpen(true); setConfirmPatientData(elem) }}>Cancel</button>
-                                            </div> : elem.status==='confirm'? <button className="text-red-400" onClick={() => { setIsCancelTabOpen(true); setConfirmPatientData(elem) }}>Cancel</button>: <button className="text-green-400" onClick={() => { setIsOpen(true); setConfirmPatientData(elem) }}>Schedule</button>
+                                            </div> : elem.status === 'confirm' ? <button className="text-red-400" onClick={() => { setIsCancelTabOpen(true); setConfirmPatientData(elem) }}>Cancel</button> : <button className="text-green-400" onClick={() => { setIsOpen(true); setConfirmPatientData(elem) }}>Schedule</button>
                                         }
 
                                     </td>
@@ -200,12 +212,12 @@ const dashboard = () => {
                 {/* pagination */}
                 <div className="flex justify-between items-center pl-16 pr-36">
                     <button className="p-2 disabled:opacity-0 bg-slate-950 pagination-btn"
-                        disabled={page < 1 ? true : false}
+                        disabled={page == 1 ? true : false}
                         onClick={() => setPage(page - 1)}
                     >
                         <FaArrowLeft className="w-8" />
                     </button>
-                    <button className="p-2 bg-slate-950 disabled:opacity-0 pagination-btn" disabled={totalPage == page ? true : false}
+                    <button className="p-2 bg-slate-950 disabled:opacity-0 pagination-btn" disabled={!hasNextPage}
                         onClick={() => setPage(page + 1)}
                     >
                         <FaArrowRight className="w-8" />

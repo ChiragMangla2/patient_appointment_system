@@ -3,8 +3,16 @@ import { useState } from 'react';
 import OtpInput from 'react-otp-input';
 import { AiOutlineClose } from "react-icons/ai";
 
-export default function Otp({ isOpen, setIsOpen }) {
+export default function Otp({ setIsOpen,handleOtpSubmit }) {
     const [otp, setOtp] = useState('');
+
+    function handleSubmit(){
+        if(otp.length<6){
+            alert("Enter otp")
+        }else{
+            handleOtpSubmit(otp);
+        }
+    }
 
     return (
         <div className='otp w-[40rem] h-[23rem] rounded-lg border p-10'>
@@ -27,7 +35,7 @@ export default function Otp({ isOpen, setIsOpen }) {
                     renderInput={(props) => <input {...props}className='text-white bg-stone-800 border-2 rounded-lg text-center gap-1 text-lg' style={{ width: '80px', height: '50px' }} />}
                 />
             </div>
-            <button className='login-btn w-full h-12 text-xl'>Verify</button>
+            <button className='login-btn w-full h-12 text-xl' onClick={handleSubmit}>Verify</button>
         </div>
     );
 }

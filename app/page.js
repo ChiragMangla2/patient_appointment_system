@@ -40,6 +40,17 @@ const Login = () => {
     }
   }
 
+  async function handleOtpSubmit(otp) {
+    if (otp?.length < 6) {
+      alert("Enter otp")
+    } else {
+      const result = await axios.post("/api/admin", { pin: otp });
+      setIsOpen(false);
+      sessionStorage.setItem("carePulseAdmin",result.data.token)
+      router.push('/dashboard');
+    }
+  }
+
   return (
     <>
       <div className={`main w-full h-screen flex overflow-hidden ${isOpen ? " blur-md" : ""}`}>
@@ -134,7 +145,7 @@ const Login = () => {
 
       {/*  */}
       <div className={`fixed top-0 left-0 w-full h-full flex items-center justify-center ${isOpen ? '' : 'hidden'}`}>
-        <Otp isOpen={isOpen} setIsOpen={setIsOpen} />
+        <Otp setIsOpen={setIsOpen} handleOtpSubmit={handleOtpSubmit} />
       </div>
     </>
   )
