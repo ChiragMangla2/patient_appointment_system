@@ -13,6 +13,7 @@ const appointmentForm = () => {
     const [reasonForApp, setReasonForApp] = useState('');
     const [note, setNote] = useState('');
     const [selectedDate, setSelectedDate] = useState(null);
+    const [errors, setErrors] = useState({ reasonForApp: '', note: '', selectedDate: '' });
     const router = useRouter();
 
     // check patient login
@@ -23,17 +24,28 @@ const appointmentForm = () => {
         }
     }, []);
 
+    // validating form fields
+    const validateForm = () => {
+        const newErrors = {
+            reasonForApp: reasonForApp?.trim() ? '' : 'Please enter reason for appointment',
+            note: note?.trim() ? '' : 'Please enter additional note',
+            selectedDate: selectedDate ? '' : 'Please select appointment date',
+        };
+        setErrors(newErrors);
+        return Object.values(newErrors).some((error) => error);
+    };
+
     // handle form data
     const handleSubmit = async (event) => {
-        if (!drname || !reasonForApp || !note || !selectedDate) {
+        if (validateForm()) {
             alert("fill details");
         } else {
             const patientToken = sessionStorage.getItem("patientToken");
             const response = await axios.post("/api/appointment", {
-                drname, reasonForApp, note, selectedDate,patientToken
+                drname, reasonForApp, note, selectedDate, patientToken
             })
             if (response.data.success) {
-                sessionStorage.setItem("appointment",JSON.stringify({drname:response.data.result.drname,date:response.data.result.selectedDate}));
+                sessionStorage.setItem("appointment", JSON.stringify({ drname: response.data.result.drname, date: response.data.result.selectedDate }));
                 router.push('/success');
             } else {
                 alert("Something went wrong. Please try agian later!");
@@ -124,7 +136,8 @@ const appointmentForm = () => {
 
                                         <textarea id="ar" className='bg border border-white/50 py-3 px-4 w-full h-24 resize-none' placeholder='ex: Annual montly check-up' value={reasonForApp}
                                             onChange={e => setReasonForApp(e.target.value)} />
-                                        <p className="text-red-400">Please enter your appointment reason</p>
+                                        {errors.reasonForApp && <p className="text-red-500 text-sm">{errors.reasonForApp}</p>}
+
                                     </div>
 
                                 </div>
@@ -138,7 +151,7 @@ const appointmentForm = () => {
                                             value={note}
                                             onChange={e => setNote(e.target.value)}
                                         />
-                                        <p className="text-red-400">Please enter additional comments/notes</p>
+                                        {errors.note && <p className="text-red-500 text-sm">{errors.note}</p>}
                                     </div>
 
                                 </div>
@@ -158,7 +171,9 @@ const appointmentForm = () => {
                                         className="bg border-white/50 py-3 px-4 w-[53vw] outline-none"
                                         autoComplete="off"
                                     />
+
                                 </div>
+                                {errors.selectedDate && <p className="text-red-500 text-sm">{errors.selectedDate}</p>}
                             </div>
                         </div>
 

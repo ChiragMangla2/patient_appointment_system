@@ -7,9 +7,20 @@ import axios from "axios";
 const CancelAppointment = ({ setIsCancelTabOpen, isCancelTabOpen, confirmPatientData,update,setUpdate }) => {
 
     const [reasonForCancellation, setReasonForCancellation] = useState('');
+    const [errors, setErrors] = useState({ reasonForCancellation: '' });
 
+      // validating form fields
+  const validateForm = () => {
+    const newErrors = {
+      reasonForCancellation: reasonForCancellation?.trim() ? '' : 'Please enter reason for cancellation',
+    };
+    setErrors(newErrors);
+    return Object.values(newErrors).some((error) => error);
+  };
+
+    // handle cancel form
     const handleSubmit = async (e) => {
-        if (!reasonForCancellation) {
+        if (validateForm()) {
             alert("fill details");
         } else {
             if (confirmPatientData) {
@@ -50,6 +61,8 @@ const CancelAppointment = ({ setIsCancelTabOpen, isCancelTabOpen, confirmPatient
                     <textarea className="col1 appo-sch p-4 text-base rounded-lg" style={{ resize: 'none', width: '100%', height: '100px' }} placeholder="ex: Urgent meeting came up" id="cancelTextarea" value={reasonForCancellation}
                         onChange={e => setReasonForCancellation(e.target.value)}
                     />
+                {errors.reasonForCancellation && <p className="text-red-500 text-sm">{errors.reasonForCancellation}</p>}
+
                 </div>
 
                 <div>

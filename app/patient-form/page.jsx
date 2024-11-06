@@ -3,7 +3,7 @@ import Image from "next/image";
 import illustrtion from "../public/illustration.png";
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
-import { useState,useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import axios from 'axios';
 import { useRouter } from "next/navigation";
 
@@ -25,12 +25,13 @@ const patientForm = () => {
     const [currentMedication, setCurrentMedication] = useState('');
     const [familyMedicalHistory, setFamilyMedicalHistory] = useState('');
     const [postMedicalHistory, setPostMedicalHistory] = useState('');
-    const [identificationType, setIdentificationType] = useState('');
+    const [identificationType, setIdentificationType] = useState('Aadhar card');
     const [identificationNumber, setIdentificationNumber] = useState('');
     const [idCopy, setIdCopy] = useState(null);
     const [term1, setTerm1] = useState(false);
     const [term2, setTerm2] = useState(false);
     const [term3, setTerm3] = useState(false);
+    const [errors, setErrors] = useState({ fname: '', email: '', address: '', dob: '', phone: '', gender: '', occupation: '', emergencyName: '', emergencyNum: '', primaryPhysician: '', insuranceProvider: '', policyNumber: '', allergies: '', currentMedication: '', familyMedicalHistory: '', postMedicalHistory: '', identificationType: '', identificationNumber: '', idCopy: '', term1: '', term2: '', term3: '', });
     const router = useRouter();
 
     // check patient login
@@ -41,41 +42,45 @@ const patientForm = () => {
         }
     }, []);
 
+    // validating form fields
+    const validateForm = () => {
+        const newErrors = {
+            fname: fname?.trim() ? '' : 'Please enter your name',
+            email: email?.trim() ? '' : 'Please enter your email',
+            phone: phone?.trim() ? '' : 'Please enter your phone number',
+            dob: dob ? '' : 'Please select your date of birth',
+            address: address?.trim() ? '' : 'Please enter your address',
+            occupation: occupation?.trim() ? '' : 'Please enter your occupation',
+            emergencyName: emergencyName?.trim() ? '' : 'Please enter emergency contact name',
+            emergencyNum: emergencyNum?.trim() ? '' : 'Please enter emergency contact number',
+            insuranceProvider: insuranceProvider?.trim() ? '' : 'Please enter insurance provider',
+            policyNumber: policyNumber?.trim() ? '' : 'Please enter policy number',
+            allergies: allergies?.trim() ? '' : 'Please enter your allergies',
+            currentMedication: currentMedication?.trim() ? '' : 'Please enter your current medications',
+            familyMedicalHistory: familyMedicalHistory?.trim() ? '' : 'Please enter your family medical history',
+            postMedicalHistory: postMedicalHistory?.trim() ? '' : 'Please enter your medical history',
+            identificationType: identificationType?.trim() ? '' : 'Please enter id type',
+            identificationNumber: identificationNumber?.trim() ? '' : 'Please enter id number',
+            idCopy: idCopy ? '' : 'Upload id',
+            term1: term1 ? '' : 'Please accept terms',
+            term2: term2 ? '' : 'Please accept terms',
+            term3: term3 ? '' : 'Please accept terms',
+        };
+        setErrors(newErrors);
+        return !Object.values(newErrors).some((error) => error);
+    };
+
     const handleOptionChange = (event) => {
         setGender(event.target.value);
     };
 
-    function check() {
-        console.log("fname =>", fname);
-        console.log("email =>", email);
-        console.log("Address =>", address);
-        console.log("Phone =>", phone);
-        console.log("DOB => ", dob)
-        console.log("Gender =>", gender);
-        console.log("Occupation =>", occupation);
-        console.log("emergency name =>", emergencyName);
-        console.log("Emergency number =>", emergencyNum);
-        console.log("Insurance provider =>", insuranceProvider);
-        console.log("policy num =>", policyNumber);
-        console.log("Allergy =>", allergies);
-        console.log("Current medication =>", currentMedication);
-        console.log("Family medi his =>", familyMedicalHistory);
-        console.log("Post Medical his =>", postMedicalHistory);
-        console.log("Id type =>", identificationType);
-        console.log("Id num =>", identificationNumber);
-        console.log("id copy =>", idCopy);
-        console.log("Dr => ", primaryPhysician);
-        console.log("Term 1 => ", term1);
-        console.log("Term2 => ", term2);
-        console.log("term3 => ", term3);
-    }
-
+    // Handle form submission
     const handleSubmit = async () => {
-        // check(); //check all input values on client side.
-        if (!fname || !email || !phone || !dob || !gender || !address || !occupation || !emergencyName || !emergencyNum || !drname || !insuranceProvider || !policyNumber || !allergies || !currentMedication || !familyMedicalHistory || !postMedicalHistory ||
-            !identificationType || !identificationNumber || !idCopy) {
-            alert("Details missing");
-        } else {
+
+        if (!validateForm()) {
+            console.log('Form submitted details missing:', { fname, email, phone }, !validateForm());
+        }
+        else {
 
             const response = await axios.post('/api/patient', {
                 fname, email, phone, dob, gender, address, occupation, emergencyName, emergencyNum, primaryPhysician, insuranceProvider, policyNumber, allergies, currentMedication, familyMedicalHistory, postMedicalHistory, identificationType, identificationNumber, idCopy
@@ -156,7 +161,7 @@ const patientForm = () => {
                                 <input type="text" className='bg border border-white/50 py-3 px-4 w-full' id="name" placeholder='ex: Adam' autoComplete='off'
                                     value={fname}
                                     onChange={e => setFname(e.target.value)} />
-                                <p className="text-red-400">Please enter your name</p>
+                                {errors.fname && <p className="text-red-500 text-sm">{errors.fname}</p>}
                             </div>
                             <div className="grid grid-cols-10 gap-4">
                                 {/* left */}
@@ -166,7 +171,8 @@ const patientForm = () => {
                                         <input type="email" id="email" className='bg border border-white/50 py-3 px-4 w-full' placeholder='adam@example.com' autoComplete='off'
                                             value={email}
                                             onChange={e => setEmail(e.target.value)} />
-                                        <p className="text-red-400">Please enter your email</p>
+                                        {errors.email && <p className="text-red-500 text-sm">{errors.email}</p>}
+
                                     </div>
 
                                     <div className="flex flex-col">
@@ -178,7 +184,8 @@ const patientForm = () => {
                                             id="dob"
                                             className="bg border border-white/50 py-3 px-4 w-full"
                                         />
-                                        <p className="text-red-400">Please select your date of birth</p>
+                                        {errors.dob && <p className="text-red-500 text-sm">{errors.dob}</p>}
+
                                     </div>
 
                                     <div className="flex flex-col">
@@ -186,7 +193,8 @@ const patientForm = () => {
                                         <input type="email" id="address" className='bg border border-white/50 py-3 px-4 w-full' placeholder='ex: 14 street, New York, NY-5101' autoComplete='off'
                                             value={address}
                                             onChange={e => setAddress(e.target.value)} />
-                                        <p className="text-red-400">Please enter your address</p>
+                                        {errors.address && <p className="text-red-500 text-sm">{errors.address}</p>}
+
                                     </div>
 
                                     <div className="flex flex-col">
@@ -194,8 +202,8 @@ const patientForm = () => {
                                         <input type="email" id="emergency" className='bg border border-white/50 py-3 px-4 w-full' placeholder="Guardian's name" autoComplete='off'
                                             value={emergencyName}
                                             onChange={e => setEmergencyName(e.target.value)} />
-                                        <p className="text-red-400">Please enter emergency contact number
-                                        </p>
+                                        {errors.emergencyNum && <p className="text-red-500 text-sm">{errors.emergencyNum}</p>}
+
                                     </div>
                                 </div>
 
@@ -206,7 +214,8 @@ const patientForm = () => {
                                         <input type="tel" id="phone" className='bg border border-white/50 py-3 px-4 w-full' placeholder='Enter phone number' autoComplete='off'
                                             value={phone}
                                             onChange={e => setPhone(e.target.value)} />
-                                        <p className="text-red-400">Please enter your phone number</p>
+                                        {errors.phone && <p className="text-red-500 text-sm">{errors.phone}</p>}
+
                                     </div>
 
                                     <div className="flex flex-col">
@@ -247,7 +256,6 @@ const patientForm = () => {
                                                 Other
                                             </label>
                                         </div>
-                                        <p className="text-red-400 h-6"></p>
                                     </div>
 
                                     <div className="flex flex-col">
@@ -255,7 +263,8 @@ const patientForm = () => {
                                         <input type="tel" id="Occupation" className='bg border border-white/50 py-3 px-4 w-full' placeholder='Software Engineer' autoComplete='off'
                                             value={occupation}
                                             onChange={e => setOccupation(e.target.value)} />
-                                        <p className="text-red-400">Please enter your occupation</p>
+                                        {errors.occupation && <p className="text-red-500 text-sm">{errors.occupation}</p>}
+
                                     </div>
 
                                     <div className="flex flex-col">
@@ -263,7 +272,8 @@ const patientForm = () => {
                                         <input type="tel" id="emergency-phone" className='bg border border-white/50 py-3 px-4 w-full' placeholder='Enter phone number' autoComplete='off'
                                             value={emergencyNum}
                                             onChange={e => setEmergencyNum(e.target.value)} />
-                                        <p className="text-red-400">Please enter name</p>
+                                        {errors.emergencyNum && <p className="text-red-500 text-sm">{errors.emergencyNum}</p>}
+
                                     </div>
 
                                 </div>
@@ -290,7 +300,8 @@ const patientForm = () => {
                                         <input type="text" id="insurance-provider" className='bg border border-white/50 py-3 px-4 w-full' placeholder='ex: BlueCross' autoComplete='off'
                                             value={insuranceProvider}
                                             onChange={e => setInsuranceProvider(e.target.value)} />
-                                        <p className="text-red-400">Please enter insurance provider</p>
+                                        {errors.insuranceProvider && <p className="text-red-500 text-sm">{errors.insuranceProvider}</p>}
+
                                     </div>
 
                                     <div className="flex flex-col">
@@ -299,7 +310,8 @@ const patientForm = () => {
                                         <textarea id="allergies" className='bg border border-white/50 py-3 px-4 w-full h-24 resize-none' placeholder='ex: Peanuts, Penicillin, Pollen'
                                             value={allergies}
                                             onChange={e => setAllergies(e.target.value)} />
-                                        <p className="text-red-400">Please enter your allergies</p>
+                                        {errors.allergies && <p className="text-red-500 text-sm">{errors.allergies}</p>}
+
                                     </div>
 
                                     <div className="flex flex-col">
@@ -307,7 +319,8 @@ const patientForm = () => {
                                         <textarea id="family-med-his" className='bg border border-white/50 py-3 px-4 w-full h-24 resize-none' placeholder='ex: Mother had cancer'
                                             value={familyMedicalHistory}
                                             onChange={e => setFamilyMedicalHistory(e.target.value)} />
-                                        <p className="text-red-400">Please enter your family medical history</p>
+                                        {errors.familyMedicalHistory && <p className="text-red-500 text-sm">{errors.familyMedicalHistory}</p>}
+
                                     </div>
 
                                 </div>
@@ -319,7 +332,8 @@ const patientForm = () => {
                                         <input type="tel" id="ipn" className='bg border border-white/50 py-3 px-4 w-full' placeholder='ex: ABC1234567' autoComplete='off'
                                             value={policyNumber}
                                             onChange={e => setPolicyNumber(e.target.value)} />
-                                        <p className="text-red-400">Please enter policy number</p>
+                                        {errors.policyNumber && <p className="text-red-500 text-sm">{errors.policyNumber}</p>}
+
                                     </div>
 
                                     <div className="flex flex-col">
@@ -327,7 +341,8 @@ const patientForm = () => {
                                         <textarea id="cm" className='bg border border-white/50 py-3 px-4 w-full h-24 resize-none' placeholder='ex: lbuprofen 200mg, Levothyroxine 50mcg'
                                             value={currentMedication}
                                             onChange={e => setCurrentMedication(e.target.value)} />
-                                        <p className="text-red-400">Please enter your current medications</p>
+                                        {errors.currentMedication && <p className="text-red-500 text-sm">{errors.currentMedication}</p>}
+
                                     </div>
 
                                     <div className="flex flex-col">
@@ -335,7 +350,8 @@ const patientForm = () => {
                                         <textarea id="pmh" className='bg border border-white/50 py-3 px-4 w-full h-24 resize-none' placeholder='ex: Asthma diagnosis in childhood'
                                             value={postMedicalHistory}
                                             onChange={e => setPostMedicalHistory(e.target.value)} />
-                                        <p className="text-red-400">Please enter your medical history</p>
+                                        {errors.postMedicalHistory && <p className="text-red-500 text-sm">{errors.postMedicalHistory}</p>}
+
                                     </div>
 
                                 </div>
@@ -346,16 +362,22 @@ const patientForm = () => {
                         <div className="login-form my-12 flex flex-col gap-y-6">
                             <div className="text text-3xl font-bold">Identification and Verfication</div>
                             <div className="flex flex-col">
-                                <label htmlFor="" className='text-color'>Identification type</label>
-                                <input type="text" className='bg border border-white/50 py-3 px-4 w-full' id="name" placeholder='ex: Adam' autoComplete='off'
-                                    value={identificationType}
-                                    onChange={e => setIdentificationType(e.target.value)} />
+                                <label htmlFor="idType" className='text-color'>Identification type</label>
+                                <select id="idType" className="outline-none bg border border-white/50 py-3 px-4 w-full" defaultValue={identificationType} onChange={e => setIdentificationType(e.target.value)}>
+                                    <option value="Aadhar card">Aadhar card</option>
+                                    <option value="Pan card">Pan card</option>
+                                    <option value="Driving License">Driving License</option>
+                                </select>
+                                {errors.identificationType && <p className="text-red-500 text-sm">{errors.identificationType}</p>}
+
                             </div>
                             <div className="flex flex-col">
                                 <label htmlFor="id-num" className='text-color'>Identification number</label>
                                 <input type="text" className='bg border border-white/50 py-3 px-4 w-full' id="id-num" placeholder='ex: 123456' autoComplete='off'
                                     value={identificationNumber}
                                     onChange={e => setIdentificationNumber(e.target.value)} />
+                                {errors.identificationNumber && <p className="text-red-500 text-sm">{errors.identificationNumber}</p>}
+
                             </div>
                             <div className="flex flex-col">
                                 <label htmlFor="file" className='text-color'>Scanned Copy of Identification Document</label>
@@ -373,8 +395,8 @@ const patientForm = () => {
                                             onChange={e => setIdCopy(e.target.value)} />
                                     </label>
                                 </div>
+                                {errors.idCopy && <p className="text-red-500 text-sm">{errors.idCopy}</p>}
 
-                                {/*  */}
                             </div>
                         </div>
 
@@ -386,12 +408,16 @@ const patientForm = () => {
                                     checked={term1}
                                     onChange={e => setTerm1(!term1)} />
                                 <label htmlFor="t1" className='text-color'>I consent to receive treatment for my health condition.</label>
+                                {errors.term1 && <p className="text-red-500 text-sm">{errors.term1}</p>}
+
                             </div>
                             <div className="flex">
                                 <input type="checkbox" className='bg border border-stone/50 mr-3 h-5 w-5' id="t2"
                                     checked={term2}
                                     onChange={e => setTerm2(!term2)} />
                                 <label htmlFor="t2" className='text-color'>I consent to the use and disclosure of my health information for treatment purposes.</label>
+                                {errors.term2 && <p className="text-red-500 text-sm">{errors.term2}</p>}
+
                             </div>
                             <div className="flex">
                                 <input type="checkbox" className='bg border border-stone/50 mr-3 h-5 w-5' id="t3"
@@ -400,6 +426,8 @@ const patientForm = () => {
                                 <label htmlFor="t3" className='text-color'>
                                     I acknowledge that I have reviewed and agree to the privacy policy
                                 </label>
+                                {errors.term3 && <p className="text-red-500 text-sm">{errors.term3}</p>}
+
                             </div>
                         </div>
 

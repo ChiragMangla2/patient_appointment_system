@@ -10,8 +10,10 @@ const Login = () => {
   const [fname, setFname] = useState('');
   const [email, setEmail] = useState('');
   const [phone, setPhone] = useState('');
+  const [errors, setErrors] = useState({ fname: '', email: '', phone: '' });
   const router = useRouter();
 
+  // checking is user login or not
   useEffect(() => {
     const data = sessionStorage.getItem('patientToken');
     if (data) {
@@ -25,8 +27,20 @@ const Login = () => {
     }
   }, []);
 
+  // validating form fields
+  const validateForm = () => {
+    const newErrors = {
+      fname: fname?.trim() ? '' : 'Please enter your name',
+      email: email?.trim() ? '' : 'Please enter your email',
+      phone: phone?.trim() ? '' : 'Please enter your phone number',
+    };
+    setErrors(newErrors);
+    return Object.values(newErrors).some((error) => error);
+  };
+
+  // handle login form
   const handleForm = async () => {
-    if (!fname || !email || !phone) {
+    if (validateForm()) {
       alert("Details missing")
     }
     else {
@@ -40,13 +54,14 @@ const Login = () => {
     }
   }
 
+  // handle admin login
   async function handleOtpSubmit(otp) {
     if (otp?.length < 6) {
       alert("Enter otp")
     } else {
       const result = await axios.post("/api/admin", { pin: otp });
       setIsOpen(false);
-      sessionStorage.setItem("carePulseAdmin",result.data.token)
+      sessionStorage.setItem("carePulseAdmin", result.data.token)
       router.push('/dashboard');
     }
   }
@@ -116,14 +131,17 @@ const Login = () => {
               <div className="flex flex-col">
                 <label htmlFor="name" className='text-color'>Full name</label>
                 <input type="text" className='bg input' id="name" placeholder='Enter name' value={fname} onChange={e => setFname(e.target.value)} autoComplete="off" />
+                {errors.fname && <p className="text-red-500 text-sm">{errors.fname}</p>}
               </div>
               <div className="flex flex-col">
                 <label htmlFor="email" className='text-color'>Email Address</label>
                 <input type="email" id="email" className='bg input' placeholder='Enter email' value={email} onChange={e => setEmail(e.target.value)} autoComplete="off" />
+                {errors.email && <p className="text-red-500 text-sm">{errors.email}</p>}
               </div>
               <div className="flex flex-col">
                 <label htmlFor="phone" className='text-color'>Phone number</label>
                 <input type="tel" id="phone" className='bg input' placeholder='Enter phone number' value={phone} onChange={e => setPhone(e.target.value)} autoComplete="off" />
+                {errors.phone && <p className="text-red-500 text-sm">{errors.phone}</p>}
               </div>
               <div>
                 <input className='login-btn input rounded-md text-xl cursor-pointer' type="button" value="Get started" onClick={handleForm} />

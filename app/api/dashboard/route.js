@@ -14,10 +14,10 @@ export async function POST(request) {
         return NextResponse.json({ success: false, message:"Unauthorised access!"});
     }
 
-    // 1. logic pura ho gya h buss kuch chije reh gyi h jase jub new registeration form open ho usme missing detail ko hide kro or tabhe show kro jab subit button click ho and baki pages me bhe
-    // 2. Image ko multer ki help se server per store kro new registeration form me
-    // 3. Typescript ko add kro
-    // 4. Responsiveness
+    // 1. Responsiveness
+    // 2. Typescript ko add kro
+    // 3. Image ko multer ki help se server per store kro new registeration form me / save on firebase
+    // contextApi me new appointment ki details save kro jo aabhe session me store ho rhi h , and login token and admin token ko bhe add kr sakte h think about it.
     
     const verify = await verifyToken(token);
     if(!verify.valid){

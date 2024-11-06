@@ -16,19 +16,19 @@ export async function POST(request) {
         return NextResponse.json({ success, result: "details missing" });
 
     } else {
+        await mongoose.connect(connectionStr)
         let patientExist = await patient.findOne({ fname: payload.fname, email: payload.email, dob: payload.dob, phone: payload.phone });
         if (patientExist) {
             console.log("Patient is already exist")
             return NextResponse.json({ success, result: "Already patient exist" });
         } else {
-            await mongoose.connect(connectionStr)
-            const patient = new patientSchema(payload);
-            const result = await patient.save();
+            const newPatient = new patient(payload);
+            const result = await newPatient.save();
             if (result) {
                 success = true;
             }
 
-            return NextResponse.json({ success, result });
+            return NextResponse.json({ success, result,message:"Register successfully!" });
         }
     }
 }
