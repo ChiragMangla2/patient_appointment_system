@@ -30,6 +30,7 @@ const dashboard = () => {
     const [update, setUpdate] = useState(false);
     const router = useRouter();
 
+    // fetch data for dashboard
     async function fetchData(token) {
         let { data } = await axios.post(`/api/dashboard?page=${page}`,{token});
         if(data.success){
@@ -51,7 +52,6 @@ const dashboard = () => {
             fetchData(token);
         } else {
             router.push('/');
-            // api pr bhe validation lagao
         }
 
         return () => {
@@ -64,9 +64,9 @@ const dashboard = () => {
 
     return (
         <div className="dashboard-main min-h-screen">
-            <div className={`${isOpen ? 'blur-lg' : ''} ${isCancelTabOpen ? 'blur-lg' : ''} w-full p-3 pb-6 flex flex-col gap-y-8`}>
+            <div className={`${isOpen ? 'blur-lg' : ''} ${isCancelTabOpen ? 'blur-lg' : ''} w-full lg:p-3 pb-6 flex flex-col gap-y-6 lg:gap-y-8`}>
                 {/* logo */}
-                <div className="logo flex justify-between items-center py-6 px-12">
+                <div className="logo flex justify-between items-center py-6 px-4 lg:px-12">
                     <div className="svg">
                         <svg width="164" height="38" viewBox="0 0 164 38" fill="none" xmlns="http://www.w3.org/2000/svg">
                             <g filter="url(#filter0_dd_13001_399)">
@@ -123,38 +123,38 @@ const dashboard = () => {
                 </div>
 
                 {/* heading */}
-                <div className="heading px-16 flex flex-col gap-3">
-                    <div className='text-4xl font-bold'>Welcome, Admin</div>
-                    <div className='text-xl font-medium text-color'>Start day with managing new appointments</div>
+                <div className="heading px-4 lg:px-16 flex flex-col gap-3">
+                    <div className='text-2xl lg:text-4xl font-bold'>Welcome, Admin</div>
+                    <div className='text-base lg:text-xl font-medium text-color'>Start day with managing new appointments</div>
                 </div>
 
                 {/* appointment summary */}
-                <div className="flex px-16 gap-24">
-                    <div className="item w-[480px] h-[152px] rounded-xl p-6">
+                <div className="flex flex-col lg:flex-row px-4 lg:px-16 gap-6 lg:gap-24">
+                    <div className="item lg:w-[480px] lg:h-[152px] rounded-xl p-6">
                         <div className="no flex">
                             <Image src={totalImg} alt="img" />
-                            <div className="text-4xl">{totalScheduleData}</div>
+                            <div className="text-2xl lg:text-4xl">{totalScheduleData}</div>
                         </div>
-                        <div className="no-text text-base font-bold pl-4">Total number of  scheduled appointments</div>
+                        <div className="text-sm lg:text-base font-bold pl-4">Total number of  scheduled appointments</div>
                     </div>
-                    <div className="item w-[480px] h-[152px] rounded-xl p-6">
+                    <div className="item lg:w-[480px] lg:h-[152px] rounded-xl p-6">
                         <div className="no flex">
                             <Image src={pendingImg} alt="img" />
-                            <div className="text-4xl">{totalPendingData}</div>
+                            <div className="text-2xl lg:text-4xl">{totalPendingData}</div>
                         </div>
-                        <div className="no-text text-base font-bold pl-4">Total number of pending appointments</div>
+                        <div className="text-sm lg:text-base font-bold pl-4">Total number of pending appointments</div>
                     </div>
-                    <div className="item w-[480px] h-[152px] rounded-xl p-6">
+                    <div className="item lg:w-[480px] lg:h-[152px] rounded-xl p-6">
                         <div className="no flex">
                             <Image src={cancelImg} alt="img" />
-                            <div className="text-4xl">{totalCancelData}</div>
+                            <div className="text-2xl lg:text-4xl">{totalCancelData}</div>
                         </div>
-                        <div className="no-text text-base font-bold pl-4">Total number of cancelled  appointments</div>
+                        <div className="text-sm lg:text-base font-bold pl-4">Total number of cancelled  appointments</div>
                     </div>
                 </div>
 
                 {/* appointments table*/}
-                <div className="appointment-table px-16">
+                <div className="appointment-table px-4 lg:px-16 overflow-x-scroll lg:overflow-hidden">
                     <table className="w-[85vw]">
                         <thead>
                             <tr>
@@ -169,7 +169,7 @@ const dashboard = () => {
                             {
                                 data?.map((elem, index) => <tr className={index % 2 == 0 ? "bg-dark" : "bg-light"} key={index}>
                                     <td className="flex items-center gap-x-4">
-                                        <div className="circle bg-green-800 p-2 rounded-full font-extrabold text-base">
+                                        <div className="circle bg-green-800 p-1 lg:p-2 rounded-full font-semibold lg:font-extrabold text-xs lg:text-base">
                                             {
                                                 elem.patientId.fname.split(" ").length > 1 ?
                                                     elem.patientId.fname.split(" ")[0].charAt(0) + elem.patientId.fname.split(" ")[1].charAt(0)
@@ -177,17 +177,17 @@ const dashboard = () => {
                                             }</div>
                                         <div className="text">{elem.patientId.fname}</div>
                                     </td>
-                                    <td className=" text-sm">{formatDate(elem.selectedDate)}</td>
+                                    <td className="text-xs lg:text-sm">{formatDate(elem.selectedDate)}</td>
                                     <td className="w-auto">
 
                                         <div className={`flex items-center justify-start ${elem.status == 'pending' ? 'pending' : elem.status == 'cancel' ? 'cancelled' : 'scheduled'} rounded-3xl w-28 px-2 gap-x-2`}>
                                             <Image src={elem.status == 'pending' ? pending : elem.status == 'cancel' ? x : check} alt="status" width={18} />
-                                            <span className=" font-bold">{elem.status}</span>
+                                            <span className="font-semibold lg:font-bold">{elem.status}</span>
                                         </div>
                                     </td>
                                     <td>
-                                        <div className="flex items-center gap-x-4">
-                                            <div className="w-10 h-10 overflow-hidden rounded-full">
+                                        <div className="flex items-center gap-x-4 w-32 lg:w-auto">
+                                            <div className="w-8 lg:w-10 h-8 lg:h-10 overflow-hidden rounded-full">
                                                 <Image src={img1} alt="img" className="w-full h-full" />
                                             </div>
                                             <span className="">{elem.drname}</span>
@@ -210,7 +210,7 @@ const dashboard = () => {
                 </div>
 
                 {/* pagination */}
-                <div className="flex justify-between items-center pl-16 pr-36">
+                <div className="flex justify-between items-center pl-2 lg:pl-16 lg:pr-36">
                     <button className="p-2 disabled:opacity-0 bg-slate-950 pagination-btn"
                         disabled={page == 1 ? true : false}
                         onClick={() => setPage(page - 1)}

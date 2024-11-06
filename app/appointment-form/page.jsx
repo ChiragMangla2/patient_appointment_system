@@ -54,10 +54,10 @@ const appointmentForm = () => {
     };
 
     return (
-        <div className="grid grid-cols-10 w-full">
-            <div className="col-span-7">
-                <div className="login w-full h-full px-28">
-                    <div className="logo py-16">
+        <div className="lg:grid lg:grid-cols-10 w-full">
+            <div className="lg:col-span-7">
+                <div className="login w-full h-full px-5 lg:px-28">
+                    <div className="logo py-5 lg:py-16">
                         <div className="svg">
                             <svg width="164" height="38" viewBox="0 0 164 38" fill="none" xmlns="http://www.w3.org/2000/svg">
                                 <g filter="url(#filter0_dd_13001_399)">
@@ -111,13 +111,13 @@ const appointmentForm = () => {
 
                     <div className="content">
                         <div className="heading">
-                            <div className='text-4xl font-bold'>Hey there 👋</div>
-                            <div className='text-xl font-medium text-color'>Request a new appointment in 10 seconds</div>
+                            <div className='text-2xl lg:text-4xl font-bold'>Hey there 👋</div>
+                            <div className='text-lg lg:text-xl font-medium text-color'>Request a new appointment in 10 seconds</div>
                         </div>
 
 
                         {/* appointment form */}
-                        <div className="login-form my-12 flex flex-col gap-y-6">
+                        <div className="login-form my-5 lg:my-12 flex flex-col gap-y-6">
                             <div className="flex flex-col">
                                 <label htmlFor="drname" className='text-color'>Doctor</label>
                                 <select id="drname" className="outline-none bg border border-white/50 py-3 px-4 w-full" defaultValue={drname} onChange={e => setDrname(e.target.value)}>
@@ -127,14 +127,14 @@ const appointmentForm = () => {
                                 </select>
                             </div>
 
-                            <div className="grid grid-cols-10 gap-4">
+                            <div className="lg:grid lg:grid-cols-10 flex flex-col gap-4">
                                 {/* left */}
-                                <div className="col-span-5 flex flex-col gap-y-4">
+                                <div className="lg:col-span-5 flex flex-col gap-y-4">
 
                                     <div className="flex flex-col">
-                                        <label htmlFor="ar" className='text-color'>Reason for appointment</label>
+                                        <label htmlFor="rfa" className='text-color'>Reason for appointment</label>
 
-                                        <textarea id="ar" className='bg border border-white/50 py-3 px-4 w-full h-24 resize-none' placeholder='ex: Annual montly check-up' value={reasonForApp}
+                                        <textarea id="rfa" className='bg border border-white/50 py-3 px-4 w-full lg:h-24 resize-none' placeholder='ex: Annual montly check-up' value={reasonForApp}
                                             onChange={e => setReasonForApp(e.target.value)} />
                                         {errors.reasonForApp && <p className="text-red-500 text-sm">{errors.reasonForApp}</p>}
 
@@ -147,7 +147,7 @@ const appointmentForm = () => {
 
                                     <div className="flex flex-col">
                                         <label htmlFor="acn" className='text-color'>Additional comments / notes</label>
-                                        <textarea id="acn" className='bg border border-white/50 py-3 px-4 w-full h-24 resize-none' placeholder='ex: Prefer afternoon appointments, if possible'
+                                        <textarea id="acn" className='bg border border-white/50 py-3 px-4 w-full lg:h-24 resize-none' placeholder='ex: Prefer afternoon appointments, if possible'
                                             value={note}
                                             onChange={e => setNote(e.target.value)}
                                         />
@@ -161,7 +161,7 @@ const appointmentForm = () => {
                                 <label htmlFor="doa" className='text-color'>
                                     Expected appointment date
                                 </label>
-                                <div className="flex gap-x-4 bg px-2 border border-white/50">
+                                <div className="flex gap-x-4 bg px-2 border border-white/50 overflow-hidden">
                                     <Image src={calender} alt="img" />
                                     <DatePicker
                                         selected={selectedDate}
@@ -186,8 +186,8 @@ const appointmentForm = () => {
             </div>
 
             {/* main right */}
-            <div className="col-span-3 w-full h-full">
-                <Image src={appointmentFormImg} alt="img" style={{ width: "100%", height: "100%" }} />
+            <div className="hidden lg:block lg:col-span-3 lg:w-full lg:h-full">
+                <Image src={appointmentFormImg} alt="img" style={{ width: "100%", height: "80%" }} />
             </div>
         </div>
     )

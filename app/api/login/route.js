@@ -1,6 +1,8 @@
 import { generateToken } from "@/app/lib/createJwtToken";
 import { patient } from "@/app/lib/patient.model";
 import { NextResponse } from "next/server";
+import { connectionStr } from "@/app/lib/db";
+import mongoose from "mongoose";
 
 export async function GET(request, content) {
     return NextResponse.json({ success: true, greet: "Hello" });
@@ -15,6 +17,7 @@ export async function POST(request) {
         return NextResponse.json({ success, result: "details missing" });
 
     } else {
+        await mongoose.connect(connectionStr)
         let data = await patient.findOne({ fname: payload.fname, email: payload.email, phone: payload.phone });
         if (data) {
             console.log("Patient is already exist")

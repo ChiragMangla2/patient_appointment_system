@@ -8,6 +8,7 @@ import axios from 'axios';
 import { useRouter } from "next/navigation";
 
 const patientForm = () => {
+    // start responsiveness
 
     const [fname, setFname] = useState('');
     const [email, setEmail] = useState('');
@@ -94,9 +95,10 @@ const patientForm = () => {
 
     return (
         <div className="grid grid-cols-10 w-full min-h-[100vh] pb-24">
-            <div className="col-span-7">
-                <div className="login w-full h-full px-28">
-                    <div className="logo py-16">
+            {/* main left */}
+            <div className="col-span-full lg:col-span-7">
+                <div className="login w-full h-full px-5 lg:px-28">
+                    <div className="logo py-5 lg:py-16">
                         <div className="svg">
                             <svg width="164" height="38" viewBox="0 0 164 38" fill="none" xmlns="http://www.w3.org/2000/svg">
                                 <g filter="url(#filter0_dd_13001_399)">
@@ -150,12 +152,12 @@ const patientForm = () => {
 
                     <div className="content">
                         <div className="heading">
-                            <div className='text-4xl font-bold'>Welcome 👋</div>
-                            <div className='text-xl font-medium text-color'>Let us know more about yourself</div>
+                            <div className='text-2xl lg:text-4xl font-bold'>Welcome 👋</div>
+                            <div className='text-lg lg:text-xl font-medium text-color'>Let us know more about yourself</div>
                         </div>
                         {/* personal info */}
-                        <div className="login-form my-12 flex flex-col gap-y-6">
-                            <div className="text text-3xl font-bold">Personal Information</div>
+                        <div className="my-6 lg:my-12 flex flex-col gap-y-6">
+                            <div className="text text-2xl lg:text-3xl font-bold">Personal Information</div>
                             <div className="flex flex-col">
                                 <label htmlFor="name" className='text-color'>Full name</label>
                                 <input type="text" className='bg border border-white/50 py-3 px-4 w-full' id="name" placeholder='ex: Adam' autoComplete='off'
@@ -163,9 +165,9 @@ const patientForm = () => {
                                     onChange={e => setFname(e.target.value)} />
                                 {errors.fname && <p className="text-red-500 text-sm">{errors.fname}</p>}
                             </div>
-                            <div className="grid grid-cols-10 gap-4">
+                            <div className="lg:grid lg:grid-cols-10 gap-4">
                                 {/* left */}
-                                <div className="col-span-5 flex flex-col gap-y-4">
+                                <div className="lg:col-span-5 flex flex-col gap-y-4">
                                     <div className="flex flex-col">
                                         <label htmlFor="email" className='text-color'>Email Address</label>
                                         <input type="email" id="email" className='bg border border-white/50 py-3 px-4 w-full' placeholder='adam@example.com' autoComplete='off'
@@ -208,7 +210,7 @@ const patientForm = () => {
                                 </div>
 
                                 {/* right */}
-                                <div className="col-span-5 flex flex-col gap-y-4">
+                                <div className="lg:col-span-5 flex flex-col gap-y-4">
                                     <div className="flex flex-col">
                                         <label htmlFor="phone" className='text-color'>Phone number</label>
                                         <input type="tel" id="phone" className='bg border border-white/50 py-3 px-4 w-full' placeholder='Enter phone number' autoComplete='off'
@@ -221,7 +223,7 @@ const patientForm = () => {
                                     <div className="flex flex-col">
                                         <label htmlFor="gender" className='text-color'>Gender</label>
                                         <div className="flex justify-between">
-                                            <label className="bg border border-white/50 py-3 px-4 flex gap-4 cursor-pointer">
+                                            <label className="bg lg:border lg:border-white/50 py-3 px-4 flex gap-4 cursor-pointer">
                                                 <input
                                                     type="radio"
                                                     name="option"
@@ -233,21 +235,21 @@ const patientForm = () => {
                                                 />
                                                 Male
                                             </label>
-                                            <label className="bg border border-white/50 py-3 px-4 flex gap-4 cursor-pointer">
+                                            <label className="bg lg:border lg:border-white/50 py-3 px-4 flex gap-4 cursor-pointer">
                                                 <input
                                                     type="radio"
-                                                    name="f"
-                                                    value="female"
+                                                    name="option"
+                                                    value="f"
                                                     checked={gender === 'f'}
                                                     className="w-4 cursor-pointer"
                                                     onChange={handleOptionChange}
                                                 />
                                                 Female
                                             </label>
-                                            <label className="bg border border-white/50 py-3 px-4 flex gap-4 cursor-pointer">
+                                            <label className="bg lg:border lg:border-white/50 py-3 px-4 flex gap-4 cursor-pointer">
                                                 <input
                                                     type="radio"
-                                                    name="other"
+                                                    name="option"
                                                     value="o"
                                                     checked={gender === 'o'}
                                                     className="w-4 cursor-pointer"
@@ -268,7 +270,7 @@ const patientForm = () => {
                                     </div>
 
                                     <div className="flex flex-col">
-                                        <label htmlFor="emergency-phone" className='text-color'>Phone number</label>
+                                        <label htmlFor="emergency-phone" className='text-color'>Emergency Phone number</label>
                                         <input type="tel" id="emergency-phone" className='bg border border-white/50 py-3 px-4 w-full' placeholder='Enter phone number' autoComplete='off'
                                             value={emergencyNum}
                                             onChange={e => setEmergencyNum(e.target.value)} />
@@ -281,7 +283,7 @@ const patientForm = () => {
                         </div>
 
                         {/* medical info */}
-                        <div className="login-form my-12 flex flex-col gap-y-6">
+                        <div className="my-12 flex flex-col gap-y-6">
                             <div className="text text-3xl font-bold">Medical Information</div>
                             <div className="flex flex-col">
                                 <label htmlFor="primaryPhysician" className='text-color'>Primary care physician</label>
@@ -292,9 +294,9 @@ const patientForm = () => {
                                     <option value="Other">Other</option>
                                 </select>
                             </div>
-                            <div className="grid grid-cols-10 gap-4">
+                            <div className="lg:grid lg:grid-cols-10 gap-4">
                                 {/* left */}
-                                <div className="col-span-5 flex flex-col gap-y-4">
+                                <div className="lg:col-span-5 flex flex-col gap-y-4">
                                     <div className="flex flex-col">
                                         <label htmlFor="insurance-provider" className='text-color'>Insurance provider</label>
                                         <input type="text" id="insurance-provider" className='bg border border-white/50 py-3 px-4 w-full' placeholder='ex: BlueCross' autoComplete='off'
@@ -326,7 +328,7 @@ const patientForm = () => {
                                 </div>
 
                                 {/* right */}
-                                <div className="col-span-5 flex flex-col gap-y-4">
+                                <div className="lg:col-span-5 flex flex-col gap-y-4">
                                     <div className="flex flex-col">
                                         <label htmlFor="ipn" className='text-color'>Insurancce policy number</label>
                                         <input type="tel" id="ipn" className='bg border border-white/50 py-3 px-4 w-full' placeholder='ex: ABC1234567' autoComplete='off'
@@ -359,7 +361,7 @@ const patientForm = () => {
                         </div>
 
                         {/* identification and verification */}
-                        <div className="login-form my-12 flex flex-col gap-y-6">
+                        <div className="my-12 flex flex-col gap-y-6">
                             <div className="text text-3xl font-bold">Identification and Verfication</div>
                             <div className="flex flex-col">
                                 <label htmlFor="idType" className='text-color'>Identification type</label>
@@ -401,7 +403,7 @@ const patientForm = () => {
                         </div>
 
                         {/* terms */}
-                        <div className="login-form my-12 flex flex-col gap-y-6">
+                        <div className="my-12 flex flex-col gap-y-6">
                             <div className="text text-3xl font-bold">Consent and Privacy</div>
                             <div className="flex">
                                 <input type="checkbox" className='bg border border-stone/50 mr-3 h-5 w-5' id="t1"
@@ -440,8 +442,8 @@ const patientForm = () => {
             </div>
 
             {/* main right */}
-            <div className="col-span-3 w-full h-screen overflow-hidden">
-                <Image src={illustrtion} alt="img" style={{ width: "100%", height: "100%" }} />
+            <div className="hidden lg:block lg:col-span-3 lg:w-full lg:h-screen overflow-hidden">
+                <Image src={illustrtion} alt="img" className="lg:w-full lg:h-full" />
             </div>
         </div>
     )

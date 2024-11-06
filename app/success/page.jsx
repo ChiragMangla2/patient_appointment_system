@@ -21,7 +21,7 @@ const Success = () => {
     }, []);
 
     return (
-        <div className="w-full h-screen flex flex-col gap-y-6">
+        <div className="w-full h-screen flex flex-col lg:gap-y-6">
             <div className="h-32 flex justify-center items-center">
                 <div className="svg">
                     <svg width="164" height="38" viewBox="0 0 164 38" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -74,16 +74,16 @@ const Success = () => {
                 </div>
             </div>
 
-            <div className="flex flex-col justify-center items-center mt-10">
+            <div className="flex flex-col justify-center items-center lg:mt-10">
                 <div className="check">
                     <Image src={check} alt="check" />
                 </div>
-                <div className="text text-center text-3xl font-bold">Your <span className="text-green">appointment request</span>
+                <div className="text text-center text-2xl lg:text-3xl font-bold">Your <span className="text-green">appointment request</span>
                     <br /> has been successfully submitted!</div>
                 <div className="text-color mt-4 text-xs font-semibold">We'll be in touch shortly to confirm.</div>
             </div>
 
-            <div className="flex justify-center items-center gap-x-8 mt-10">
+            <div className="flex flex-col lg:flex-row justify-center items-center gap-x-8 gap-y-4 mt-10">
                 <div className=" text-xl text-color">Requested appointment details:</div>
                 {
                     drname ? <><div className="drname px-4 py-2 bg-light">{drname ? drname : ""}</div>

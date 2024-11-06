@@ -15,9 +15,10 @@ const Login = () => {
 
   // checking is user login or not
   useEffect(() => {
-    const data = sessionStorage.getItem('patientToken');
-    if (data) {
+    if (sessionStorage.getItem('patientToken')) {
       router.push('/appointment-form');
+    }else if(sessionStorage.getItem('carePulseAdmin')){
+      router.push('/dashboard');
     }
 
     return () => {
@@ -69,8 +70,9 @@ const Login = () => {
   return (
     <>
       <div className={`main w-full h-screen flex overflow-hidden ${isOpen ? " blur-md" : ""}`}>
-        <div className="login w-[50vw] h-full px-28">
-          <div className="logo py-16">
+        {/* left */}
+        <div className="login lg:w-[50vw] h-full lg:px-28">
+          <div className="logo pl-5 lg:pl-0 py-8 lg:py-16">
             <div className="svg">
               <svg width="164" height="38" viewBox="0 0 164 38" fill="none" xmlns="http://www.w3.org/2000/svg">
                 <g filter="url(#filter0_dd_13001_399)">
@@ -122,46 +124,47 @@ const Login = () => {
             </div>
           </div>
 
-          <div className="content">
+          <div className="content px-5">
             <div className="heading">
               <div className='text-4xl font-bold'>Hi there, ...</div>
               <div className='text-xl font-medium text-color'>Get Started with Appointments.</div>
             </div>
-            <div className="login-form my-12 flex flex-col gap-y-6">
+            <div className="login-form my-12 px-1 flex flex-col gap-y-6">
               <div className="flex flex-col">
                 <label htmlFor="name" className='text-color'>Full name</label>
-                <input type="text" className='bg input' id="name" placeholder='Enter name' value={fname} onChange={e => setFname(e.target.value)} autoComplete="off" />
+                <input type="text" className='bg w-[20rem] px-2 py-2 lg:w-full lg:px-2 lg:py-2' id="name" placeholder='Enter name' value={fname} onChange={e => setFname(e.target.value)} autoComplete="off" />
                 {errors.fname && <p className="text-red-500 text-sm">{errors.fname}</p>}
               </div>
               <div className="flex flex-col">
                 <label htmlFor="email" className='text-color'>Email Address</label>
-                <input type="email" id="email" className='bg input' placeholder='Enter email' value={email} onChange={e => setEmail(e.target.value)} autoComplete="off" />
+                <input type="email" id="email" className='bg w-[20rem] px-2 py-2 lg:w-full lg:px-2 lg:py-2' placeholder='Enter email' value={email} onChange={e => setEmail(e.target.value)} autoComplete="off" />
                 {errors.email && <p className="text-red-500 text-sm">{errors.email}</p>}
               </div>
               <div className="flex flex-col">
                 <label htmlFor="phone" className='text-color'>Phone number</label>
-                <input type="tel" id="phone" className='bg input' placeholder='Enter phone number' value={phone} onChange={e => setPhone(e.target.value)} autoComplete="off" />
+                <input type="tel" id="phone" className='bg w-[20rem] px-2 py-2 lg:w-full lg:px-2 lg:py-2' placeholder='Enter phone number' value={phone} onChange={e => setPhone(e.target.value)} autoComplete="off" />
                 {errors.phone && <p className="text-red-500 text-sm">{errors.phone}</p>}
               </div>
               <div>
-                <input className='login-btn input rounded-md text-xl cursor-pointer' type="button" value="Get started" onClick={handleForm} />
+                <input className='login-btn bg w-[20rem] px-2 py-2 lg:w-full lg:px-2 lg:py-2 rounded-md text-xl cursor-pointer' type="button" value="Get started" onClick={handleForm} />
               </div>
             </div>
           </div>
 
-          <div className="copy flex justify-between pr-16">
+          <div className="copy flex justify-between pr-16 px-5 w-96 lg:w-full">
             <button onClick={() => router.push('/patient-form')}>Don't have Account?</button>
             <button onClick={() => setIsOpen(true)}>Admin</button>
           </div>
-          <div className=" mt-6 text-blue-100">
+          <div className=" mt-4 text-center text-blue-100">
             @carepulse copyright
           </div>
         </div>
-        <div className="bg-img w-[50vw]">
+        {/* right */}
+        <div className="bg-img lg:w-[50vw]">
         </div>
       </div>
 
-      {/*  */}
+      {/* admin otp login */}
       <div className={`fixed top-0 left-0 w-full h-full flex items-center justify-center ${isOpen ? '' : 'hidden'}`}>
         <Otp setIsOpen={setIsOpen} handleOtpSubmit={handleOtpSubmit} />
       </div>
