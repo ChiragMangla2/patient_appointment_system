@@ -48,6 +48,7 @@ const dashboard = () => {
         }
     }
 
+    // fetch data
     useEffect(() => {
         const token = sessionStorage.getItem("carePulseAdmin");
         if (token) {
