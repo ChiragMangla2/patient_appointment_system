@@ -4,11 +4,13 @@ import check from "../public/check-circle.svg";
 import calender from "../public/calender.svg";
 import { useState, useEffect } from 'react';
 import { formatDate } from "../lib/formatDate";
+import { useRouter } from "next/navigation";
 
 const Success = () => {
 
     const [drname, setDrname] = useState('');
     const [date, setDate] = useState('');
+    const router = useRouter();
 
     useEffect(() => {
         let data = sessionStorage.getItem('appointment');
@@ -17,7 +19,14 @@ const Success = () => {
             setDrname(data.drname);
             let date = formatDate(data.date)
             setDate(date);
+        }else{
+            router.push('/appointment-form');            
         }
+        return () => {
+            // sessionStorage.clear('appointment');
+            setDrname('');
+            setDate('');
+          }
     }, []);
 
     return (

@@ -23,7 +23,7 @@ const ConfirmAppointment = ({setIsOpen,isOpen,confirmPatientData,update,setUpdat
             {/* heading */}
             <div className="heading flex flex-col gap-3">
                 <div className="flex justify-between items-center">
-                    <div className='text-2xl font-bold'>
+                    <div className='text-xl lg:text-2xl font-bold'>
                         Confirm Appointment
                     </div>
                     <div className="cancel p-2 cursor-pointer" onClick={() => {
@@ -32,7 +32,7 @@ const ConfirmAppointment = ({setIsOpen,isOpen,confirmPatientData,update,setUpdat
                         <Image src={close} alt="close" />
                     </div>
                 </div>
-                <div className='text-base font-medium text-color'>
+                <div className='text-sm lg:text-base font-medium text-color'>
                     Please fill in the following details to schedule
                 </div>
             </div>
@@ -72,7 +72,7 @@ const ConfirmAppointment = ({setIsOpen,isOpen,confirmPatientData,update,setUpdat
                 </div>
 
                 <div>
-                    <button className='login-btn py-[8px] px-[10px] w-full rounded-md font-bold text-xl'
+                    <button className='login-btn py-[8px] px-[10px] w-full rounded-md font-bold text-lg lg:text-xl'
                     onClick={handleSubmit}
                     >Confirm appointment</button>
                 </div>

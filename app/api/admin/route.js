@@ -10,8 +10,6 @@ export async function POST(request) {
     const { pin } = payload;
     console.log(pin)
 
-    // otp yaha send kro or popup box me admin ka pass kr ki agar admin ho to yaha otp aaye
-
     if (!pin) {
         return NextResponse.json({ success, result: "details missing" });
 
@@ -22,11 +20,11 @@ export async function POST(request) {
             if (pin == result.pin) {
                 success = true;
                 const token = await generateToken(result._id)
-                return NextResponse.json({ success, token });
+                return NextResponse.json({ success, token,message:"Login success" });
             }
-            return NextResponse.json({ success });
+            return NextResponse.json({ success,message:"Access denied" });
         }
-
-        return NextResponse.json({ success });
+        
+        return NextResponse.json({ success,message:"Access denied" });
     }
 }

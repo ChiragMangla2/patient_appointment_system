@@ -14,6 +14,7 @@ export default function Otp({ setIsOpen,handleOtpSubmit }) {
             alert("Enter otp")
         }else{
             handleOtpSubmit(otp);
+            setOtp('');
         }
     }
 

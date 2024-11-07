@@ -38,7 +38,7 @@ const CancelAppointment = ({ setIsCancelTabOpen, isCancelTabOpen, confirmPatient
             {/* heading */}
             <div className="heading flex flex-col gap-3">
                 <div className="flex justify-between items-center">
-                    <div className='text-2xl font-bold'>
+                    <div className='text-xl lg:text-2xl font-bold'>
                         Cancel Appointment
                     </div>
                     <div className="cancel p-2 cursor-pointer" onClick={() => {
@@ -47,7 +47,7 @@ const CancelAppointment = ({ setIsCancelTabOpen, isCancelTabOpen, confirmPatient
                         <Image src={close} alt="close" />
                     </div>
                 </div>
-                <div className='text-base font-medium text-color'>
+                <div className='text-sm lg:text-base font-medium text-color'>
                     Are you sure you want to cancel your appointment
                 </div>
             </div>
