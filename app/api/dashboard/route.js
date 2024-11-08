@@ -14,10 +14,8 @@ export async function POST(request) {
         return NextResponse.json({ success: false, message:"Unauthorised access!"});
     }
 
-    // 1. add loader (responsiveness completed)
     // 2. Typescript ko add kro
     // 3. Image ko multer ki help se server per store kro new registeration form me / save on firebase
-    // contextApi me new appointment ki details save kro jo aabhe session me store ho rhi h , and login token and admin token ko bhe add kr sakte h think about it.
     
     const verify = await verifyToken(token);
     if(!verify.valid){
