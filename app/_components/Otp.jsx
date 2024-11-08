@@ -1,13 +1,21 @@
 "use client";
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import OtpInput from 'react-otp-input';
 import { AiOutlineClose } from "react-icons/ai";
 
 export default function Otp({ setIsOpen,handleOtpSubmit }) {
     const [otp, setOtp] = useState('');
-    const [inputWidth, setInputWidth] = useState(
-        typeof window !== 'undefined' && window.innerWidth >= 1024 ? '80px' : '35px'
-    );
+    const [inputWidth, setInputWidth] = useState('');
+
+    useEffect(()=>{
+        setInputWidth(typeof window !== 'undefined' && window.innerWidth >= 1024 ? '80px' : '35px')
+
+        return ()=>{
+            setOtp('');
+            setInputWidth('');
+        }
+    },[])
+
     // handle submit otp
     function handleSubmit(){
         if(otp.length<6){

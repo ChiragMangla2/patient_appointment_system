@@ -8,6 +8,8 @@ import calender from "../public/calender.svg";
 import axios from "axios";
 import { useRouter } from "next/navigation";
 import Loader from "../_components/Loader";
+import { IoIosLogOut } from "react-icons/io";
+import { useAppContext } from "../context/AppContext";
 
 const appointmentForm = () => {
     const [drname, setDrname] = useState('Dr. Amit');
@@ -17,11 +19,11 @@ const appointmentForm = () => {
     const [errors, setErrors] = useState({ reasonForApp: '', note: '', selectedDate: '' });
     const [loading, setLoading] = useState(true);
     const router = useRouter();
+    const { patientToken, setPatientToken, setAppointmentDetails } = useAppContext()
 
     // check patient login
     useEffect(() => {
-        const data = sessionStorage.getItem('patientToken');
-        if (!data) {
+        if (!patientToken) {
             router.push('/');
         }
         setLoading(false);
@@ -44,12 +46,11 @@ const appointmentForm = () => {
         if (validateForm()) {
             alert("fill details");
         } else {
-            const patientToken = sessionStorage.getItem("patientToken");
             const response = await axios.post("/api/appointment", {
                 drname, reasonForApp, note, selectedDate, patientToken
             })
             if (response.data.success) {
-                sessionStorage.setItem("appointment", JSON.stringify({ drname: response.data.result.drname, date: response.data.result.selectedDate }));
+                setAppointmentDetails({ drname: response.data.result.drname, date: response.data.result.selectedDate });
                 router.push('/success');
             } else {
                 alert("Something went wrong. Please try agian later!");
@@ -58,13 +59,20 @@ const appointmentForm = () => {
         setLoading(false);
     };
 
+    // handle logout
+    const handleLogout = () => {
+        sessionStorage.clear('patientToken');
+        setPatientToken('');
+        router.push('/')
+    }
+
     return (
         <>
             {loading && <Loader />}
             <div className={`${loading ? 'blur-lg' : ''} lg:grid lg:grid-cols-10 w-full pb-10`}>
                 <div className="lg:col-span-7">
                     <div className="login w-full h-full px-5 lg:px-28">
-                        <div className="logo py-5 lg:py-16">
+                        <div className="logo py-5 lg:py-16 flex justify-between items-center">
                             <div className="svg">
                                 <svg width="164" height="38" viewBox="0 0 164 38" fill="none" xmlns="http://www.w3.org/2000/svg">
                                     <g filter="url(#filter0_dd_13001_399)">
@@ -114,6 +122,8 @@ const appointmentForm = () => {
                                 </svg>
 
                             </div>
+                            <button className="text-base font-extrabold text-white flex" onClick={handleLogout}>Logout <IoIosLogOut className="w-8 h-6"/>
+                            </button>
                         </div>
 
                         <div className="content">

@@ -4,6 +4,7 @@ import Otp from "./_components/otp";
 import axios from "axios";
 import { useRouter } from "next/navigation";
 import Loader from "./_components/Loader";
+import { useAppContext } from "./context/AppContext";
 
 const Login = () => {
 
@@ -14,16 +15,18 @@ const Login = () => {
   const [errors, setErrors] = useState({ fname: '', email: '', phone: '' });
   const [loading, setLoading] = useState(true);
   const router = useRouter();
+  const {setPatientToken,setAdminToken} = useAppContext()
 
   // checking is user login or not
   useEffect(() => {
     if (sessionStorage.getItem('patientToken')) {
+      setPatientToken(sessionStorage.getItem('patientToken'));
       router.push('/appointment-form');
     } else if (sessionStorage.getItem('carePulseAdmin')) {
+      setAdminToken(sessionStorage.getItem('carePulseAdmin'))
       router.push('/dashboard');
     }
     setLoading(false);
-    
     return () => {
       setLoading(false);
       setFname('');
@@ -53,6 +56,7 @@ const Login = () => {
       const response = await axios.post('/api/login', { fname, email, phone });
       if (response.data.success) {
         sessionStorage.setItem('patientToken', response.data.token);
+        setPatientToken(response.data.token);
         router.push('/appointment-form');
       } else {
         setFname('');
@@ -71,10 +75,10 @@ const Login = () => {
     } else {
       setLoading(true);
       const result = await axios.post("/api/admin", { pin: otp });
-      console.log(result.data.success);
       if(result?.data.success){
         setIsOpen(false);
-        sessionStorage.setItem("carePulseAdmin", result.data.token)
+        sessionStorage.setItem("carePulseAdmin", result.data.token);
+        setAdminToken(result.data.token);
         router.push('/dashboard');
         setLoading(false);
       }else{

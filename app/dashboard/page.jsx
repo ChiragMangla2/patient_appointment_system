@@ -6,6 +6,7 @@ import pendingImg from "../public/pending-appo.png";
 import cancelImg from "../public/cancel-appo.png";
 import check from "../public/check.svg";
 import pending from "../public/pending.svg";
+import { IoIosLogOut } from "react-icons/io";
 import x from "../public/x.svg";
 import { FaArrowLeft } from "react-icons/fa6";
 import { FaArrowRight } from "react-icons/fa6";
@@ -16,6 +17,7 @@ import { formatDate } from "../lib/formatDate";
 import ConfirmAppointment from "../_components/ConfirmAppointment";
 import { useRouter } from "next/navigation";
 import Loader from "../_components/Loader";
+import { useAppContext } from "../context/AppContext";
 
 const dashboard = () => {
 
@@ -31,6 +33,8 @@ const dashboard = () => {
     const [update, setUpdate] = useState(false);
     const [loading, setLoading] = useState(true);
     const router = useRouter();
+    const { adminToken,setAdminToken } = useAppContext()
+
 
     // fetch data for dashboard
     async function fetchData(token) {
@@ -50,9 +54,8 @@ const dashboard = () => {
 
     // fetch data
     useEffect(() => {
-        const token = sessionStorage.getItem("carePulseAdmin");
-        if (token) {
-            fetchData(token);
+        if (adminToken) {
+            fetchData(adminToken);
             setLoading(false);
         } else {
             router.push('/');
@@ -65,6 +68,12 @@ const dashboard = () => {
         }
     }, [update, page]);
 
+    // handle logout
+    const handleLogout = () => {
+        sessionStorage.clear('carePulseAdmin');
+        setAdminToken('');
+        router.push('/')
+    }
 
     return (
         <>
@@ -122,10 +131,10 @@ const dashboard = () => {
                             </svg>
 
                         </div>
-                        <div className="admin flex gap-x-2 font-bold justify-center items-center">
-                            <Image src={img1} alt="img" className="w-8 h-8 rounded-full" />
+                        <button className="admin flex gap-x-2 font-bold justify-center items-center" onClick={handleLogout}>
                             <span>Admin</span>
-                        </div>
+                            <IoIosLogOut className="w-8 h-6"/>
+                        </button>
                     </div>
 
                     {/* heading */}

@@ -7,6 +7,7 @@ import { useState, useEffect } from 'react';
 import axios from 'axios';
 import { useRouter } from "next/navigation";
 import Loader from "../_components/Loader";
+import { useAppContext } from "../context/AppContext";
 
 const patientForm = () => {
     // start responsiveness
@@ -36,11 +37,14 @@ const patientForm = () => {
     const [errors, setErrors] = useState({ fname: '', email: '', address: '', dob: '', phone: '', gender: '', occupation: '', emergencyName: '', emergencyNum: '', primaryPhysician: '', insuranceProvider: '', policyNumber: '', allergies: '', currentMedication: '', familyMedicalHistory: '', postMedicalHistory: '', identificationType: '', identificationNumber: '', idCopy: '', term1: '', term2: '', term3: '', });
     const [loading, setLoading] = useState(true);
     const router = useRouter();
+    const { patientToken } = useAppContext();
+
 
     // check patient login
     useEffect(() => {
-        const data = sessionStorage.getItem('patientToken');
-        if (data) {
+        // const data = sessionStorage.getItem('patientToken');
+        // if (data) {
+        if (patientToken) {
             router.push('/appointment-form');
         }
         setLoading(false);
