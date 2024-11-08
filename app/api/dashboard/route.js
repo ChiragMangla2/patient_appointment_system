@@ -14,8 +14,8 @@ export async function POST(request) {
         return NextResponse.json({ success: false, message:"Unauthorised access!"});
     }
 
-    // 2. Typescript ko add kro
-    // 3. Image ko multer ki help se server per store kro new registeration form me / save on firebase
+    // 1. Typescript ko add kro
+    // 2. Image ko multer ki help se server per store kro new registeration form me / save on firebase
     
     const verify = await verifyToken(token);
     if(!verify.valid){
