@@ -6,57 +6,80 @@ import pendingImg from "../public/pending-appo.png";
 import cancelImg from "../public/cancel-appo.png";
 import check from "../public/check.svg";
 import pending from "../public/pending.svg";
-import { IoIosLogOut } from "react-icons/io";
 import x from "../public/x.svg";
+import { IoIosLogOut } from "react-icons/io";
 import { FaArrowLeft } from "react-icons/fa6";
 import { FaArrowRight } from "react-icons/fa6";
-import { useState, useEffect } from "react";
-import CancelAppointment from "../_components/CancelAppointment";
-import axios from "axios";
-import { formatDate } from "../lib/formatDate";
-import ConfirmAppointment from "../_components/ConfirmAppointment";
-import { useRouter } from "next/navigation";
 import Loader from "../_components/Loader";
+import ConfirmAppointment from "../_components/ConfirmAppointment";
+import CancelAppointment from "../_components/CancelAppointment";
+import { formatDate } from "../lib/formatDate";
+import { useState, useEffect } from "react";
+import axios from "axios";
+import { useRouter } from "next/navigation";
 import { useAppContext } from "../context/AppContext";
+import toast from "react-hot-toast";
+
+// Define the Patient type
+interface Patient {
+    _id: string;
+    fname: string;
+}
+
+// Define the Appointment type
+interface AppointmentType {
+    _id: string;
+    patientId: Patient;
+    drname: string;
+    reasonForApp: string;
+    note: string;
+    selectedDate: Date;
+    status: 'pending' | 'confirm' | 'cancel';
+}
 
 const dashboard = () => {
 
-    const [isOpen, setIsOpen] = useState(false);
-    const [isCancelTabOpen, setIsCancelTabOpen] = useState(false);
-    const [page, setPage] = useState(1);
-    const [hasNextPage, setHasNextPage] = useState(false);
-    const [totalScheduleData, setTotalScheduleData] = useState(null);
-    const [totalPendingData, setTotalPendingData] = useState(null);
-    const [totalCancelData, setTotalCancelData] = useState(null);
-    const [data, setData] = useState([]);
-    const [confirmPatientData, setConfirmPatientData] = useState(null);
-    const [update, setUpdate] = useState(false);
-    const [loading, setLoading] = useState(true);
+    const [isOpen, setIsOpen] = useState<boolean>(false);
+    const [isCancelTabOpen, setIsCancelTabOpen] = useState<boolean>(false);
+    const [page, setPage] = useState<number>(1);
+    const [hasNextPage, setHasNextPage] = useState<boolean>(false);
+    const [totalScheduleData, setTotalScheduleData] = useState<number | null>(null);
+    const [totalPendingData, setTotalPendingData] = useState<number | null>(null);
+    const [totalCancelData, setTotalCancelData] = useState<number | null>(null);
+    const [data, setData] = useState<AppointmentType[] | null>(null);
+    // store single patient data
+    const [confirmPatientData, setConfirmPatientData] = useState<AppointmentType | null>(null);
+    const [update, setUpdate] = useState<boolean>(false);
+    const [loading, setLoading] = useState<boolean>(true);
     const router = useRouter();
-    const { adminToken,setAdminToken } = useAppContext()
+    const { adminToken, setAdminToken } = useAppContext()
 
 
     // fetch data for dashboard
-    async function fetchData(token) {
-        let { data } = await axios.post(`/api/dashboard?page=${page}`, { token });
-        if (data.success) {
-            setTotalScheduleData(data?.confirm);
-            setTotalPendingData(data?.pending);
-            setTotalCancelData(data?.cancel);
-            setHasNextPage(data?.hasNextPage);
-            setData(data?.data);
-        } else {
-            sessionStorage.clear("carePulseAdmin");
-            router.push("/");
-            alert("Invalid access")
+    async function fetchData(token: string) {
+        try {
+            let { data } = await axios.post(`/api/dashboard?page=${page}`, { token });
+            if (data.success) {
+                setTotalScheduleData(data?.confirm);
+                setTotalPendingData(data?.pending);
+                setTotalCancelData(data?.cancel);
+                setHasNextPage(data?.hasNextPage);
+                setData(data?.data);
+            } else {
+                sessionStorage.clear();
+                router.push("/");
+                toast.error("Invalid access");
+            }
+        } catch (error) {
+            toast.error("Something wrong. Please try again later.");
         }
     }
 
     // fetch data
     useEffect(() => {
         if (adminToken) {
-            fetchData(adminToken);
-            setLoading(false);
+            setLoading(true);
+            fetchData(adminToken).finally(() => setLoading(false));
         } else {
             router.push('/');
         }
@@ -65,12 +88,14 @@ const dashboard = () => {
             setTotalScheduleData(null);
             setTotalPendingData(null);
             setTotalCancelData(null);
-        }
+        };
     }, [update, page]);
+
 
     // handle logout
     const handleLogout = () => {
-        sessionStorage.clear('carePulseAdmin');
+        toast.success("Logout successfully!");
+        sessionStorage.clear();
         setAdminToken('');
         router.push('/')
     }
@@ -133,7 +158,7 @@ const dashboard = () => {
                         </div>
                         <button className="admin flex gap-x-2 font-bold justify-center items-center" onClick={handleLogout}>
                             <span>Admin</span>
-                            <IoIosLogOut className="w-8 h-6"/>
+                            <IoIosLogOut className="w-8 h-6" />
                         </button>
                     </div>
 
@@ -182,7 +207,7 @@ const dashboard = () => {
                             </thead>
                             <tbody>
                                 {
-                                    data?.map((elem, index) => <tr className={index % 2 == 0 ? "bg-dark" : "bg-light"} key={index}>
+                                    data?.map((elem: AppointmentType, index: number) => <tr className={index % 2 == 0 ? "bg-dark" : "bg-light"} key={index}>
                                         <td className="flex items-center gap-x-4">
                                             <div className="circle bg-green-800 p-1 lg:p-2 rounded-full font-semibold lg:font-extrabold text-xs lg:text-base">
                                                 {
@@ -192,7 +217,7 @@ const dashboard = () => {
                                                 }</div>
                                             <div className="text">{elem.patientId.fname}</div>
                                         </td>
-                                        <td className="text-xs lg:text-sm">{formatDate(elem.selectedDate)}</td>
+                                        <td className="text-xs lg:text-sm">{formatDate(`${elem.selectedDate}`)}</td>
                                         <td className="w-auto">
 
                                             <div className={`flex items-center justify-start ${elem.status == 'pending' ? 'pending' : elem.status == 'cancel' ? 'cancelled' : 'scheduled'} rounded-3xl w-28 px-2 gap-x-2`}>
@@ -226,9 +251,12 @@ const dashboard = () => {
 
                     {/* pagination */}
                     <div className="flex justify-between items-center pl-2 lg:pl-16 lg:pr-36">
-                        <button className="p-2 disabled:opacity-0 bg-slate-950 pagination-btn"
-                            disabled={page == 1 ? true : false}
+                        <button
+                            className={`p-2 ${page === 1 ? 'opacity-50 cursor-not-allowed' : 'bg-slate-950'} pagination-btn`}
+                            disabled={page === 1}
                             onClick={() => setPage(page - 1)}
+                            aria-label="Previous page"
+                            title="Previous page"
                         >
                             <FaArrowLeft className="w-8" />
                         </button>

@@ -3,28 +3,58 @@ import Image from "next/image";
 import close from "../public/close.svg";
 import { useState } from "react";
 import axios from "axios";
+import toast from "react-hot-toast";
 
-const CancelAppointment = ({ setIsCancelTabOpen, isCancelTabOpen, confirmPatientData,update,setUpdate }) => {
+// Patient data type
+interface Patient {
+    _id: string;
+    fname: string;
+}
 
-    const [reasonForCancellation, setReasonForCancellation] = useState('');
-    const [errors, setErrors] = useState({ reasonForCancellation: '' });
+// props data type
+interface CancelAppointmentPropsType {
+    isCancelTabOpen: boolean;
+    setIsCancelTabOpen: (isOpen: boolean) => void;
+    update: boolean;
+    setUpdate: (update: boolean) => void;
+    confirmPatientData: {
+        _id: string;
+        patientId: Patient;
+        drname: string;
+        reasonForApp: string;
+        note: string;
+        selectedDate: Date;
+        status: 'pending' | 'confirm' | 'cancel';
+    } | null;
+}
 
-      // validating form fields
-  const validateForm = () => {
-    const newErrors = {
-      reasonForCancellation: reasonForCancellation?.trim() ? '' : 'Please enter reason for cancellation',
+const CancelAppointment = ({ isCancelTabOpen, setIsCancelTabOpen, confirmPatientData, update, setUpdate }: CancelAppointmentPropsType) => {
+
+    const [reasonForCancellation, setReasonForCancellation] = useState<string>('');
+    const [errors, setErrors] = useState<{ reasonForCancellation: string }>({ reasonForCancellation: '' });
+
+    // validating form fields
+    const validateForm = () => {
+        const newErrors = {
+            reasonForCancellation: reasonForCancellation?.trim() ? '' : 'Please enter reason for cancellation',
+        };
+        setErrors(newErrors);
+        return Object.values(newErrors).some((error) => error);
     };
-    setErrors(newErrors);
-    return Object.values(newErrors).some((error) => error);
-  };
 
     // handle cancel form
-    const handleSubmit = async (e) => {
+    const handleSubmit = async () => {
         if (validateForm()) {
             alert("fill details");
         } else {
             if (confirmPatientData) {
                 const result = await axios.put('/api/dashboard/status', { appointmentId: confirmPatientData?._id, status: 'cancel', reasonForCancellation });
+                if (result.data.success) {
+                    toast.success("Appointment cencelled.");
+                }
+                else {
+                    toast.error("Something wrong!");
+                }
                 setReasonForCancellation('');
                 setIsCancelTabOpen(false);
                 setUpdate(!update);
@@ -61,7 +91,7 @@ const CancelAppointment = ({ setIsCancelTabOpen, isCancelTabOpen, confirmPatient
                     <textarea className="col1 appo-sch p-4 text-base rounded-lg" style={{ resize: 'none', width: '100%', height: '100px' }} placeholder="ex: Urgent meeting came up" id="cancelTextarea" value={reasonForCancellation}
                         onChange={e => setReasonForCancellation(e.target.value)}
                     />
-                {errors.reasonForCancellation && <p className="text-red-500 text-sm">{errors.reasonForCancellation}</p>}
+                    {errors.reasonForCancellation && <p className="text-red-500 text-sm">{errors.reasonForCancellation}</p>}
 
                 </div>
 

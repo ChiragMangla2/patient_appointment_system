@@ -7,16 +7,22 @@ import 'react-datepicker/dist/react-datepicker.css';
 import { useState } from "react";
 import calender from "../public/calender.svg";
 
-const AppointmentSchedule = ({setIsOpen,isOpen}) => {
-    const [drname,setDrname] = useState('Dr. Amit');
-    const [reasonForApp,setReasonForApp] = useState('');
-    const [selectedDate, setSelectedDate] = useState(null);
+// props data type
+interface AppointmentSchedulePropsType {
+    isOpen: boolean;
+    setIsOpen: (isOpen: boolean) => void;
+}
 
-    const handleSubmit = (e) => {
-        if(!drname || !reasonForApp || !selectedDate){
+const AppointmentSchedule = ({ isOpen, setIsOpen }: AppointmentSchedulePropsType) => {
+    const [drname, setDrname] = useState<string>('Dr. Amit');
+    const [reasonForApp, setReasonForApp] = useState<string>('');
+    const [selectedDate, setSelectedDate] = useState<Date | null>(null);
+
+    const handleSubmit = ():void => {
+        if (!drname || !reasonForApp || !selectedDate) {
             alert("fill details");
-        }else{
-            console.log("Dr is ",drname, "\nReason is ",reasonForApp, "\nDate is ",selectedDate)
+        } else {
+            console.log("Dr is ", drname, "\nReason is ", reasonForApp, "\nDate is ", selectedDate)
         }
     }
 
@@ -31,7 +37,7 @@ const AppointmentSchedule = ({setIsOpen,isOpen}) => {
                     </div>
                     <div className="cancel p-2 cursor-pointer" onClick={() => {
                         setIsOpen(!isOpen)
-                        }}>
+                    }}>
                         <Image src={close} alt="close" />
                     </div>
                 </div>
@@ -47,7 +53,7 @@ const AppointmentSchedule = ({setIsOpen,isOpen}) => {
                     <label htmlFor="drname">Doctor</label>
                     <div className="col1 appo-sch px-4 text-xl flex items-center gap-x-4">
                         <FaSearch />
-                        <select id="drname" className="col1 py-4 w-full outline-none" defaultValue={drname} onChange={e=>setDrname(e.target.value)}>
+                        <select id="drname" className="col1 py-4 w-full outline-none" defaultValue={drname} onChange={e => setDrname(e.target.value)}>
                             <option value="Dr. Amit">Dr. Amit</option>
                             <option value="Dr. Chirag">Dr. Chirag</option>
                             <option value="Dr. Pandey">Dr. Pandey</option>
@@ -58,7 +64,7 @@ const AppointmentSchedule = ({setIsOpen,isOpen}) => {
                 {/* reason for appointment */}
                 <div className="dr text-base flex flex-col gap-y-4">
                     <label htmlFor="drname">Reason for appointment</label>
-                    <textarea className="col1 appo-sch p-4 text-base" style={{ resize: 'none', width: '100%', height: '100px' }} placeholder="ex: Annual montly check-up" value={reasonForApp} onChange={e=>setReasonForApp(e.target.value)} />
+                    <textarea className="col1 appo-sch p-4 text-base" style={{ resize: 'none', width: '100%', height: '100px' }} placeholder="ex: Annual montly check-up" value={reasonForApp} onChange={e => setReasonForApp(e.target.value)} />
                 </div>
 
                 {/* appointment date */}
@@ -81,7 +87,7 @@ const AppointmentSchedule = ({setIsOpen,isOpen}) => {
 
                 <div>
                     <button className='login-btn py-[8px] px-[10px] w-full rounded-md font-bold text-xl'
-                    onClick={handleSubmit}
+                        onClick={handleSubmit}
                     >Schedule appointment</button>
                 </div>
 

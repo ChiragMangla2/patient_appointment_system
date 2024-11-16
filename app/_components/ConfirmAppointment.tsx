@@ -1,17 +1,46 @@
 "use client";
 import Image from "next/image";
 import close from "../public/close.svg";
+import calender from "../public/calender.svg";
 import { FaSearch } from "react-icons/fa";
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
-import calender from "../public/calender.svg";
 import axios from "axios";
+import toast from "react-hot-toast";
 
-const ConfirmAppointment = ({setIsOpen,isOpen,confirmPatientData,update,setUpdate}) => {
+// Patient data type
+interface Patient {
+    _id: string;
+    fname: string;
+}
+
+// props data type
+interface ConfirmAppointmentProps {
+    isOpen: boolean;
+    setIsOpen: (isOpen: boolean) => void;
+    update: boolean;
+    setUpdate: (update: boolean) => void;
+    confirmPatientData: {
+        _id: string;
+        patientId: Patient;
+        drname: string;
+        reasonForApp: string;
+        note: string;
+        selectedDate: Date;
+        status: 'pending' | 'confirm' | 'cancel';
+    } | null;
+}
+
+const ConfirmAppointment = ({ setIsOpen, isOpen, confirmPatientData, update, setUpdate }:ConfirmAppointmentProps) => {
 
     const handleSubmit = async () => {
-        if(confirmPatientData){
-            const result = await axios.put('/api/dashboard/status',{appointmentId:confirmPatientData?._id,status:'confirm'});
+        if (confirmPatientData) {
+            const result = await axios.put('/api/dashboard/status', { appointmentId: confirmPatientData?._id, status: 'confirm' });
+            if(result.data.success) {
+                toast.success("Appointment confirmed.")
+            }else{
+                toast.error("Something wrong.");
+            }
             setIsOpen(false);
             setUpdate(!update);
         }
@@ -28,7 +57,7 @@ const ConfirmAppointment = ({setIsOpen,isOpen,confirmPatientData,update,setUpdat
                     </div>
                     <div className="cancel p-2 cursor-pointer" onClick={() => {
                         setIsOpen(!isOpen)
-                        }}>
+                    }}>
                         <Image src={close} alt="close" />
                     </div>
                 </div>
@@ -73,7 +102,7 @@ const ConfirmAppointment = ({setIsOpen,isOpen,confirmPatientData,update,setUpdat
 
                 <div>
                     <button className='login-btn py-[8px] px-[10px] w-full rounded-md font-bold text-lg lg:text-xl'
-                    onClick={handleSubmit}
+                        onClick={handleSubmit}
                     >Confirm appointment</button>
                 </div>
 

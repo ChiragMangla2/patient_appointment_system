@@ -10,11 +10,11 @@ import Loader from "../_components/Loader";
 
 const Success = () => {
 
-    const [drname, setDrname] = useState('');
-    const [date, setDate] = useState('');
+    const [drname, setDrname] = useState<string>('');
+    const [date, setDate] = useState<string>('');
     const router = useRouter();
     const { appointmentDetails, setAppointmentDetails } = useAppContext();
-    const [loading, setLoading] = useState(true);
+    const [loading, setLoading] = useState<boolean>(true);
 
     useEffect(() => {
         if (appointmentDetails) {

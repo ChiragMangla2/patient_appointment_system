@@ -1,25 +1,33 @@
 "use client";
 import Image from "next/image";
 import appointmentFormImg from "../public/appointmentForm.png";
+import calender from "../public/calender.svg";
+import { IoIosLogOut } from "react-icons/io";
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
-import { useState, useEffect } from 'react';
-import calender from "../public/calender.svg";
+import Loader from "../_components/Loader";
+import { useState, useEffect, FormEvent } from 'react';
 import axios from "axios";
 import { useRouter } from "next/navigation";
-import Loader from "../_components/Loader";
-import { IoIosLogOut } from "react-icons/io";
 import { useAppContext } from "../context/AppContext";
+import toast from "react-hot-toast";
+
+// Define type for errors
+type Errors = {
+    reasonForApp: string;
+    note: string;
+    selectedDate: string;
+};
 
 const appointmentForm = () => {
-    const [drname, setDrname] = useState('Dr. Amit');
-    const [reasonForApp, setReasonForApp] = useState('');
-    const [note, setNote] = useState('');
-    const [selectedDate, setSelectedDate] = useState(null);
-    const [errors, setErrors] = useState({ reasonForApp: '', note: '', selectedDate: '' });
-    const [loading, setLoading] = useState(true);
+    const [drname, setDrname] = useState<string>('Dr. Amit');
+    const [reasonForApp, setReasonForApp] = useState<string>('');
+    const [note, setNote] = useState<string>('');
+    const [selectedDate, setSelectedDate] = useState<Date | null>(null);
+    const [errors, setErrors] = useState<Errors>({ reasonForApp: '', note: '', selectedDate: '' });
+    const [loading, setLoading] = useState<boolean>(true);
     const router = useRouter();
-    const { patientToken, setPatientToken, setAppointmentDetails } = useAppContext()
+    const { patientToken, setPatientToken, setAppointmentDetails } = useAppContext();
 
     // check patient login
     useEffect(() => {
@@ -27,10 +35,10 @@ const appointmentForm = () => {
             router.push('/');
         }
         setLoading(false);
-    }, []);
+    }, [patientToken]);
 
     // validating form fields
-    const validateForm = () => {
+    const validateForm = (): boolean => {
         const newErrors = {
             reasonForApp: reasonForApp?.trim() ? '' : 'Please enter reason for appointment',
             note: note?.trim() ? '' : 'Please enter additional note',
@@ -41,27 +49,44 @@ const appointmentForm = () => {
     };
 
     // handle form data
-    const handleSubmit = async (event) => {
+    const handleSubmit = async (event:FormEvent) => {
+        event.preventDefault();
         setLoading(true);
+
         if (validateForm()) {
-            alert("fill details");
-        } else {
-            const response = await axios.post("/api/appointment", {
-                drname, reasonForApp, note, selectedDate, patientToken
-            })
-            if (response.data.success) {
-                setAppointmentDetails({ drname: response.data.result.drname, date: response.data.result.selectedDate });
-                router.push('/success');
-            } else {
-                alert("Something went wrong. Please try agian later!");
-            }
+            toast.error("Please fill all the details");
+            setLoading(false);
+            return;
         }
-        setLoading(false);
+
+        try {
+            const response = await axios.post("/api/appointment", {
+                drname,
+                reasonForApp,
+                note,
+                selectedDate,
+                patientToken,
+            });
+            if (response.data.success) {
+                setAppointmentDetails({
+                    drname: response.data.result.drname,
+                    date: response.data.result.selectedDate,
+                });
+                router.push("/success");
+            } else {
+                toast.error("Something went wrong. Please try again later!");
+            }
+        } catch (error) {
+            toast.error("An error occurred. Please try again later.");
+        } finally {
+            setLoading(false);
+        }
     };
 
     // handle logout
     const handleLogout = () => {
-        sessionStorage.clear('patientToken');
+        toast.success("Logoout successfully!");
+        sessionStorage.clear();
         setPatientToken('');
         router.push('/')
     }
@@ -149,9 +174,9 @@ const appointmentForm = () => {
                                     <div className="lg:col-span-5 flex flex-col gap-y-4">
 
                                         <div className="flex flex-col">
-                                            <label htmlFor="rfa" className='text-color'>Reason for appointment</label>
+                                            <label htmlFor="reasonForApp" className='text-color'>Reason for appointment</label>
 
-                                            <textarea id="rfa" className='bg border border-white/50 py-3 px-4 w-full lg:h-24 resize-none' placeholder='ex: Annual montly check-up' value={reasonForApp}
+                                            <textarea id="reasonForApp" className='bg border border-white/50 py-3 px-4 w-full lg:h-24 resize-none' placeholder='ex: Annual montly check-up' value={reasonForApp}
                                                 onChange={e => setReasonForApp(e.target.value)} />
                                             {errors.reasonForApp && <p className="text-red-500 text-sm">{errors.reasonForApp}</p>}
 
@@ -163,8 +188,8 @@ const appointmentForm = () => {
                                     <div className="col-span-5 flex flex-col gap-y-4">
 
                                         <div className="flex flex-col">
-                                            <label htmlFor="acn" className='text-color'>Additional comments / notes</label>
-                                            <textarea id="acn" className='bg border border-white/50 py-3 px-4 w-full lg:h-24 resize-none' placeholder='ex: Prefer afternoon appointments, if possible'
+                                            <label htmlFor="note" className='text-color'>Additional comments / notes</label>
+                                            <textarea id="note" className='bg border border-white/50 py-3 px-4 w-full lg:h-24 resize-none' placeholder='ex: Prefer afternoon appointments, if possible'
                                                 value={note}
                                                 onChange={e => setNote(e.target.value)}
                                             />
@@ -175,7 +200,7 @@ const appointmentForm = () => {
                                 </div>
 
                                 <div className="flex flex-col">
-                                    <label htmlFor="doa" className='text-color'>
+                                    <label htmlFor="appointmentDate" className='text-color'>
                                         Expected appointment date
                                     </label>
                                     <div className="flex gap-x-4 bg px-2 border border-white/50 overflow-hidden">
@@ -184,7 +209,7 @@ const appointmentForm = () => {
                                             selected={selectedDate}
                                             onChange={(date) => setSelectedDate(date)}
                                             placeholderText="Select your birth date"
-                                            id="app-date"
+                                            id="app-date appointmentDate"
                                             className="bg border-white/50 py-3 px-4 w-[53vw] outline-none"
                                             autoComplete="off"
                                         />

@@ -1,29 +1,30 @@
 "use client";
-import { useState, useEffect } from "react"
-import Otp from "./_components/otp";
+import { useState, useEffect } from "react";
 import axios from "axios";
 import { useRouter } from "next/navigation";
 import Loader from "./_components/Loader";
 import { useAppContext } from "./context/AppContext";
+import Otp from "./_components/Otp";
+import toast from "react-hot-toast";
 
 const Login = () => {
+  const [isOpen, setIsOpen] = useState<boolean>(false);
+  const [fname, setFname] = useState<string>('');
+  const [email, setEmail] = useState<string>('');
+  const [phone, setPhone] = useState<string>('');
+  const [errors, setErrors] = useState<{ fname: string; email: string; phone: string }>({ fname: '', email: '', phone: '' });
+  const [loading, setLoading] = useState<boolean>(true);
 
-  const [isOpen, setIsOpen] = useState(false);
-  const [fname, setFname] = useState('');
-  const [email, setEmail] = useState('');
-  const [phone, setPhone] = useState('');
-  const [errors, setErrors] = useState({ fname: '', email: '', phone: '' });
-  const [loading, setLoading] = useState(true);
   const router = useRouter();
-  const {setPatientToken,setAdminToken} = useAppContext()
+  const { setPatientToken, setAdminToken } = useAppContext();
 
-  // checking is user login or not
+  // Checking if user/admin is loggedin or not
   useEffect(() => {
     if (sessionStorage.getItem('patientToken')) {
-      setPatientToken(sessionStorage.getItem('patientToken'));
+      setPatientToken(sessionStorage.getItem('patientToken') as string);
       router.push('/appointment-form');
     } else if (sessionStorage.getItem('carePulseAdmin')) {
-      setAdminToken(sessionStorage.getItem('carePulseAdmin'))
+      setAdminToken(sessionStorage.getItem('carePulseAdmin') as string);
       router.push('/dashboard');
     }
     setLoading(false);
@@ -33,60 +34,60 @@ const Login = () => {
       setEmail('');
       setPhone('');
     }
-  }, []);
+  }, [router, setAdminToken, setPatientToken]);
 
-  // validating form fields
-  const validateForm = () => {
+  // Validating form fields
+  const validateForm = (): boolean => {
     const newErrors = {
-      fname: fname?.trim() ? '' : 'Please enter your name',
-      email: email?.trim() ? '' : 'Please enter your email',
-      phone: phone?.trim() ? '' : 'Please enter your phone number',
+      fname: fname.trim() ? '' : 'Please enter your name',
+      email: email.trim() ? '' : 'Please enter your email',
+      phone: phone.trim() ? '' : 'Please enter your phone number',
     };
     setErrors(newErrors);
     return Object.values(newErrors).some((error) => error);
   };
 
-  // handle login form
-  const handleForm = async () => {
+  // Handle login form
+  const handleForm = async (): Promise<void> => {
     setLoading(true);
     if (validateForm()) {
-      alert("Details missing")
-    }
-    else {
+      toast.error("Details missing");
+    } else {
       const response = await axios.post('/api/login', { fname, email, phone });
       if (response.data.success) {
         sessionStorage.setItem('patientToken', response.data.token);
         setPatientToken(response.data.token);
+        toast.success(response.data.message)
         router.push('/appointment-form');
       } else {
         setFname('');
         setEmail('');
         setPhone('');
-        alert("Invalid crediantials.")
-      }
-      setLoading(false);
-    }
-  }
-
-  // handle admin login
-  async function handleOtpSubmit(otp) {
-    if (otp?.length < 6) {
-      alert("Enter otp")
-    } else {
-      setLoading(true);
-      const result = await axios.post("/api/admin", { pin: otp });
-      if(result?.data.success){
-        setIsOpen(false);
-        sessionStorage.setItem("carePulseAdmin", result.data.token);
-        setAdminToken(result.data.token);
-        router.push('/dashboard');
-        setLoading(false);
-      }else{
-        alert(result?.data.message)
+        toast.error(response.data.message);
       }
     }
     setLoading(false);
-  }
+  };
+
+  // Handle admin login
+  const handleOtpSubmit = async (otp: string): Promise<void> => {
+    if (otp?.length < 6) {
+      toast.error("Enter OTP");
+    } else {
+      setLoading(true);
+      const result = await axios.post("/api/admin", { pin: otp });
+      if (result?.data.success) {
+        setIsOpen(false);
+        sessionStorage.setItem("carePulseAdmin", result.data.token);
+        setAdminToken(result.data.token);
+        toast.success(result.data.message);
+        router.push('/dashboard');
+      } else {
+        toast.error(result?.data.message);
+      }
+      setLoading(false);
+    }
+  };
 
   return (
     <>

@@ -8,67 +8,141 @@ import axios from 'axios';
 import { useRouter } from "next/navigation";
 import Loader from "../_components/Loader";
 import { useAppContext } from "../context/AppContext";
+import toast from "react-hot-toast";
 
-const patientForm = () => {
-    // start responsiveness
+// Define interfaces for state and errors
+interface FormErrors {
+    fname: string;
+    email: string;
+    address: string;
+    dob: string;
+    phone: string;
+    gender: string;
+    occupation: string;
+    emergencyName: string;
+    emergencyNum: string;
+    primaryPhysician: string;
+    insuranceProvider: string;
+    policyNumber: string;
+    allergies: string;
+    currentMedication: string;
+    familyMedicalHistory: string;
+    postMedicalHistory: string;
+    identificationType: string;
+    identificationNumber: string;
+    idCopy: string;
+    term1: string;
+    term2: string;
+    term3: string;
+}
 
-    const [fname, setFname] = useState('');
-    const [email, setEmail] = useState('');
-    const [address, setAddress] = useState('');
-    const [dob, setDob] = useState(null);
-    const [phone, setPhone] = useState('');
-    const [gender, setGender] = useState('m');
-    const [occupation, setOccupation] = useState('');
-    const [emergencyName, setEmergencyName] = useState('');
-    const [emergencyNum, setEmergencyNum] = useState('');
-    const [primaryPhysician, setPrimaryPhysician] = useState('Dr. Amit');
-    const [insuranceProvider, setInsuranceProvider] = useState('');
-    const [policyNumber, setPolicyNumber] = useState('');
-    const [allergies, setAllergies] = useState('');
-    const [currentMedication, setCurrentMedication] = useState('');
-    const [familyMedicalHistory, setFamilyMedicalHistory] = useState('');
-    const [postMedicalHistory, setPostMedicalHistory] = useState('');
-    const [identificationType, setIdentificationType] = useState('Aadhar card');
-    const [identificationNumber, setIdentificationNumber] = useState('');
-    const [idCopy, setIdCopy] = useState(null);
-    const [term1, setTerm1] = useState(false);
-    const [term2, setTerm2] = useState(false);
-    const [term3, setTerm3] = useState(false);
-    const [errors, setErrors] = useState({ fname: '', email: '', address: '', dob: '', phone: '', gender: '', occupation: '', emergencyName: '', emergencyNum: '', primaryPhysician: '', insuranceProvider: '', policyNumber: '', allergies: '', currentMedication: '', familyMedicalHistory: '', postMedicalHistory: '', identificationType: '', identificationNumber: '', idCopy: '', term1: '', term2: '', term3: '', });
-    const [loading, setLoading] = useState(true);
+const PatientForm = () => {
+    const [fname, setFname] = useState<string>('');
+    const [email, setEmail] = useState<string>('');
+    const [address, setAddress] = useState<string>('');
+    const [dob, setDob] = useState<Date | null>(null);  // Date or null
+    const [phone, setPhone] = useState<string>('');
+    const [gender, setGender] = useState<string>('m');
+    const [occupation, setOccupation] = useState<string>('');
+    const [emergencyName, setEmergencyName] = useState<string>('');
+    const [emergencyNum, setEmergencyNum] = useState<string>('');
+    const [primaryPhysician, setPrimaryPhysician] = useState<string>('Dr. Amit');
+    const [insuranceProvider, setInsuranceProvider] = useState<string>('');
+    const [policyNumber, setPolicyNumber] = useState<string>('');
+    const [allergies, setAllergies] = useState<string>('');
+    const [currentMedication, setCurrentMedication] = useState<string>('');
+    const [familyMedicalHistory, setFamilyMedicalHistory] = useState<string>('');
+    const [postMedicalHistory, setPostMedicalHistory] = useState<string>('');
+    const [identificationType, setIdentificationType] = useState<string>('Aadhar card');
+    const [identificationNumber, setIdentificationNumber] = useState<string>('');
+    const [idCopy, setIdCopy] = useState<File | null>(null);  // File or null
+    const [term1, setTerm1] = useState<boolean>(false);
+    const [term2, setTerm2] = useState<boolean>(false);
+    const [term3, setTerm3] = useState<boolean>(false);
+    const [errors, setErrors] = useState<FormErrors>({
+        fname: '',
+        email: '',
+        address: '',
+        dob: '',
+        phone: '',
+        gender: '',
+        occupation: '',
+        emergencyName: '',
+        emergencyNum: '',
+        primaryPhysician: '',
+        insuranceProvider: '',
+        policyNumber: '',
+        allergies: '',
+        currentMedication: '',
+        familyMedicalHistory: '',
+        postMedicalHistory: '',
+        identificationType: '',
+        identificationNumber: '',
+        idCopy: '',
+        term1: '',
+        term2: '',
+        term3: '',
+    });
+    const [loading, setLoading] = useState<boolean>(true);
     const router = useRouter();
     const { patientToken } = useAppContext();
 
-
     // check patient login
     useEffect(() => {
-        // const data = sessionStorage.getItem('patientToken');
-        // if (data) {
         if (patientToken) {
             router.push('/appointment-form');
         }
         setLoading(false);
-    }, []);
+        return () => setLoading(false);
+    }, [patientToken, router]);
+
+    // set fields value empty
+    const setFieldsDefault = () => {
+        setFname('');
+        setEmail('');
+        setAddress('');
+        setDob(null);
+        setPhone('');
+        setGender('m');
+        setOccupation('');
+        setEmergencyName('');
+        setEmergencyNum('');
+        setPrimaryPhysician('Dr. Amit');
+        setInsuranceProvider('');
+        setPolicyNumber('');
+        setAllergies('');
+        setCurrentMedication('');
+        setFamilyMedicalHistory('');
+        setPostMedicalHistory('');
+        setIdentificationType('Aadhar card');
+        setIdentificationNumber('');
+        setIdCopy(null);
+        setTerm1(false);
+        setTerm2(false);
+        setTerm3(false);
+    }
 
     // validating form fields
-    const validateForm = () => {
-        const newErrors = {
-            fname: fname?.trim() ? '' : 'Please enter your name',
-            email: email?.trim() ? '' : 'Please enter your email',
-            phone: phone?.trim() ? '' : 'Please enter your phone number',
+    const validateForm = (): boolean => {
+        const newErrors: FormErrors = {
+            fname: fname.trim() ? '' : 'Please enter your name',
+            email: email.trim() ? '' : 'Please enter your email',
+            phone: phone.trim() ? '' : 'Please enter your phone number',
+            gender: gender ? '' : '',
+            primaryPhysician: primaryPhysician ? '' : '',
             dob: dob ? '' : 'Please select your date of birth',
-            address: address?.trim() ? '' : 'Please enter your address',
-            occupation: occupation?.trim() ? '' : 'Please enter your occupation',
-            emergencyName: emergencyName?.trim() ? '' : 'Please enter emergency contact name',
-            emergencyNum: emergencyNum?.trim() ? '' : 'Please enter emergency contact number',
-            insuranceProvider: insuranceProvider?.trim() ? '' : 'Please enter insurance provider',
-            policyNumber: policyNumber?.trim() ? '' : 'Please enter policy number',
-            allergies: allergies?.trim() ? '' : 'Please enter your allergies',
-            currentMedication: currentMedication?.trim() ? '' : 'Please enter your current medications',
-            familyMedicalHistory: familyMedicalHistory?.trim() ? '' : 'Please enter your family medical history',
-            postMedicalHistory: postMedicalHistory?.trim() ? '' : 'Please enter your medical history',
-            identificationType: identificationType?.trim() ? '' : 'Please enter id type',
-            identificationNumber: identificationNumber?.trim() ? '' : 'Please enter id number',
+            address: address.trim() ? '' : 'Please enter your address',
+            occupation: occupation.trim() ? '' : 'Please enter your occupation',
+            emergencyName: emergencyName.trim() ? '' : 'Please enter emergency contact name',
+            emergencyNum: emergencyNum.trim() ? '' : 'Please enter emergency contact number',
+            insuranceProvider: insuranceProvider.trim() ? '' : 'Please enter insurance provider',
+            policyNumber: policyNumber.trim() ? '' : 'Please enter policy number',
+            allergies: allergies.trim() ? '' : 'Please enter your allergies',
+            currentMedication: currentMedication.trim() ? '' : 'Please enter your current medications',
+            familyMedicalHistory: familyMedicalHistory.trim() ? '' : 'Please enter your family medical history',
+            postMedicalHistory: postMedicalHistory.trim() ? '' : 'Please enter your medical history',
+            identificationType: identificationType.trim() ? '' : 'Please enter id type',
+            identificationNumber: identificationNumber.trim() ? '' : 'Please enter id number',
             idCopy: idCopy ? '' : 'Upload id',
             term1: term1 ? '' : 'Please accept terms',
             term2: term2 ? '' : 'Please accept terms',
@@ -78,29 +152,27 @@ const patientForm = () => {
         return !Object.values(newErrors).some((error) => error);
     };
 
-    const handleOptionChange = (event) => {
+    const handleOptionChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         setGender(event.target.value);
     };
 
     // Handle form submission
-    const handleSubmit = async () => {
-
+    const handleSubmit = async (): Promise<void> => {
         setLoading(true);
         if (!validateForm()) {
-            console.log('Form submitted details missing:', { fname, email, phone }, !validateForm());
-        }
-        else {
-
+            toast.error('Details missing:');
+        } else {
             const response = await axios.post('/api/patient', {
-                fname, email, phone, dob, gender, address, occupation, emergencyName, emergencyNum, primaryPhysician, insuranceProvider, policyNumber, allergies, currentMedication, familyMedicalHistory, postMedicalHistory, identificationType, identificationNumber, idCopy
+                fname, email, phone, dob, gender, address, occupation, emergencyName, emergencyNum, primaryPhysician, insuranceProvider, policyNumber, allergies, currentMedication, familyMedicalHistory, postMedicalHistory, identificationType, identificationNumber, idCopy: "firebase download image url"
             });
-            console.log(response);
             if (response.data.success) {
-                router.push('/appointment-form');
+                toast.success("Registered successfully!");
+                setFieldsDefault();
+                router.push('/');
             }
         }
         setLoading(false);
-    }
+    };
 
     return (
         <>
@@ -173,7 +245,7 @@ const patientForm = () => {
                                     <label htmlFor="name" className='text-color'>Full name</label>
                                     <input type="text" className='bg border border-white/50 py-3 px-4 w-full' id="name" placeholder='ex: Adam' autoComplete='off'
                                         value={fname}
-                                        onChange={e => setFname(e.target.value)} />
+                                        onChange={(e: React.ChangeEvent<HTMLInputElement>) => setFname(e.target.value)} />
                                     {errors.fname && <p className="text-red-500 text-sm">{errors.fname}</p>}
                                 </div>
                                 <div className="lg:grid lg:grid-cols-10 gap-4">
@@ -183,7 +255,7 @@ const patientForm = () => {
                                             <label htmlFor="email" className='text-color'>Email Address</label>
                                             <input type="email" id="email" className='bg border border-white/50 py-3 px-4 w-full' placeholder='adam@example.com' autoComplete='off'
                                                 value={email}
-                                                onChange={e => setEmail(e.target.value)} />
+                                                onChange={(e: React.ChangeEvent<HTMLInputElement>) => setEmail(e.target.value)} />
                                             {errors.email && <p className="text-red-500 text-sm">{errors.email}</p>}
 
                                         </div>
@@ -192,7 +264,7 @@ const patientForm = () => {
                                             <label htmlFor="dob" className='text-color'>Date of birth</label>
                                             <DatePicker
                                                 selected={dob}
-                                                onChange={(date) => setDob(date)}
+                                                onChange={(date: Date | null) => setDob(date)}
                                                 placeholderText="Select your birth date"
                                                 id="dob"
                                                 className="bg border border-white/50 py-3 px-4 w-full"
@@ -302,7 +374,6 @@ const patientForm = () => {
                                         <option value="Dr. Amit">Dr. Amit</option>
                                         <option value="Dr. Chirag">Dr. Chirag</option>
                                         <option value="Dr. Pandey">Dr. Pandey</option>
-                                        <option value="Other">Other</option>
                                     </select>
                                 </div>
                                 <div className="lg:grid lg:grid-cols-10 gap-4">
@@ -404,8 +475,19 @@ const patientForm = () => {
                                                 <p className="mb-2 text-sm text-gray-500 dark:text-gray-400"><span className="font-semibold text-green">Click to upload</span> or drag and drop</p>
                                                 <p className="text-xs text-gray-500 dark:text-gray-400">SVG, PNG, JPG or GIF (MAX. 800x400px)</p>
                                             </div>
-                                            <input id="dropzone-file" type="file" className="hidden"
-                                                onChange={e => setIdCopy(e.target.value)} />
+                                            <input
+                                                id="dropzone-file"
+                                                type="file"
+                                                className="hidden"
+                                                onChange={e => {
+                                                    if (e.target.files && e.target.files[0]) {
+                                                        setIdCopy(e.target.files[0]);
+                                                        console.log(e.target.files[0])
+                                                        console.log(typeof e.target.files[0])
+                                                    }
+                                                }}
+                                            />
+
                                         </label>
                                     </div>
                                     {errors.idCopy && <p className="text-red-500 text-sm">{errors.idCopy}</p>}
@@ -461,4 +543,4 @@ const patientForm = () => {
     )
 }
 
-export default patientForm
+export default PatientForm
