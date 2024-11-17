@@ -1,6 +1,6 @@
 "use client";
 import { createContext, useContext, useState, ReactNode, Dispatch, SetStateAction } from "react";
-
+// Firebase check
 // Define the context type
 interface AppContextType {
   appointmentDetails: appointmentDetailsType | string;
