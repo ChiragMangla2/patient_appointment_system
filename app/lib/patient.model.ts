@@ -25,7 +25,7 @@ interface IPatient extends Document {
 }
 
 // Define the schema for the patient
-const patientSchema: Schema<IPatient> = new Schema<IPatient>({
+const PatientSchema: Schema<IPatient> = new Schema<IPatient>({
     fname: {
         type: String,
         required: true,
@@ -103,10 +103,6 @@ const patientSchema: Schema<IPatient> = new Schema<IPatient>({
         type: String,
         required: true,
     },
-    idCopy: {
-        type: String,
-        required: true,
-    },
     createdAt: {
         type: Date,
         default: Date.now,
@@ -114,6 +110,6 @@ const patientSchema: Schema<IPatient> = new Schema<IPatient>({
 });
 
 // Create the model with the defined schema and interface
-const Patient = mongoose.models.patient || mongoose.model<IPatient>('patient', patientSchema);
+const Patient = mongoose.models["Patient"] || mongoose.model('Patient', PatientSchema);
 
 export default Patient;

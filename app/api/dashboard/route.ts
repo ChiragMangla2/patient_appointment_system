@@ -1,6 +1,5 @@
 import adminModel from "@/app/lib/admin.model";
 import Appointment from "@/app/lib/appointment.model";
-// import appointmentModel from "@/app/lib/appointment.model";
 import { verifyToken } from "@/app/lib/createJwtToken";
 import { connectionStr } from "@/app/lib/db";
 import mongoose from "mongoose";
@@ -36,7 +35,6 @@ export interface Appointment {
 export async function POST(request: NextRequest) {
   try {
     await mongoose.connect(connectionStr);
-
     const payload: Payload = await request.json();
     const { token } = payload;
 
@@ -56,6 +54,8 @@ export async function POST(request: NextRequest) {
       });
     }
     else {
+
+      await mongoose.connect(connectionStr);
       const isAdmin = await adminModel.findById(verify.decoded.id).select("-pin");
 
       if (!isAdmin) {
@@ -67,14 +67,13 @@ export async function POST(request: NextRequest) {
     }
     const page = parseInt(request.nextUrl.searchParams.get("page") || "1", 10);
     const limit = 10;
-
     const result = await Appointment
       .find()
       .populate("patientId", "_id fname");
 
-    const pending = result?.filter((ele: Appointment|any) => ele.status === "pending").length;
-    const confirm = result?.filter((ele: Appointment|any) => ele.status === "confirm").length;
-    const cancel = result?.filter((ele: Appointment|any) => ele.status === "cancel").length;
+    const pending = result?.filter((ele: Appointment | any) => ele.status === "pending").length;
+    const confirm = result?.filter((ele: Appointment | any) => ele.status === "confirm").length;
+    const cancel = result?.filter((ele: Appointment | any) => ele.status === "cancel").length;
 
     const startIndex = (page - 1) * limit;
     const endIndex = page * limit;
@@ -90,6 +89,7 @@ export async function POST(request: NextRequest) {
       totalPage: Math.ceil(result.length / limit),
       hasNextPage,
     });
+
   } catch (error: any) {
     console.error("Error in POST handler:", error);
     return NextResponse.json({

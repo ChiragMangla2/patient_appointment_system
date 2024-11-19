@@ -2,11 +2,12 @@ import appointmentModel from "@/app/lib/appointment.model";
 import { connectionStr } from "@/app/lib/db";
 import mongoose from "mongoose";
 import { NextRequest, NextResponse } from "next/server";
-
+import sendMail from "@/app/lib/sendAppointmentStatusMail"
 // Define an interface for the request payload
 interface UpdateAppointmentPayload {
   appointmentId: string;
   status: string;
+  reasonForCancellation?:string;
 }
 
 export async function PUT(request: NextRequest): Promise<NextResponse> {
@@ -24,7 +25,11 @@ export async function PUT(request: NextRequest): Promise<NextResponse> {
         { _id: appointmentId },
         { status },
         { new: true }
-      );
+      ).populate("patientId","email")
+
+      let data = result;
+      data.reasonForCancellation = payload.reasonForCancellation? payload.reasonForCancellation:"";
+      if(result) sendMail(data);
 
       return NextResponse.json({ success: true, result });
     }

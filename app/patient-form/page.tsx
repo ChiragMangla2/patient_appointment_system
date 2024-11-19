@@ -30,7 +30,6 @@ interface FormErrors {
     postMedicalHistory: string;
     identificationType: string;
     identificationNumber: string;
-    idCopy: string;
     term1: string;
     term2: string;
     term3: string;
@@ -55,7 +54,6 @@ const PatientForm = () => {
     const [postMedicalHistory, setPostMedicalHistory] = useState<string>('');
     const [identificationType, setIdentificationType] = useState<string>('Aadhar card');
     const [identificationNumber, setIdentificationNumber] = useState<string>('');
-    const [idCopy, setIdCopy] = useState<File | null>(null);  // File or null
     const [term1, setTerm1] = useState<boolean>(false);
     const [term2, setTerm2] = useState<boolean>(false);
     const [term3, setTerm3] = useState<boolean>(false);
@@ -78,7 +76,6 @@ const PatientForm = () => {
         postMedicalHistory: '',
         identificationType: '',
         identificationNumber: '',
-        idCopy: '',
         term1: '',
         term2: '',
         term3: '',
@@ -116,7 +113,6 @@ const PatientForm = () => {
         setPostMedicalHistory('');
         setIdentificationType('Aadhar card');
         setIdentificationNumber('');
-        setIdCopy(null);
         setTerm1(false);
         setTerm2(false);
         setTerm3(false);
@@ -143,7 +139,6 @@ const PatientForm = () => {
             postMedicalHistory: postMedicalHistory.trim() ? '' : 'Please enter your medical history',
             identificationType: identificationType.trim() ? '' : 'Please enter id type',
             identificationNumber: identificationNumber.trim() ? '' : 'Please enter id number',
-            idCopy: idCopy ? '' : 'Upload id',
             term1: term1 ? '' : 'Please accept terms',
             term2: term2 ? '' : 'Please accept terms',
             term3: term3 ? '' : 'Please accept terms',
@@ -161,17 +156,20 @@ const PatientForm = () => {
         setLoading(true);
         if (!validateForm()) {
             toast.error('Details missing:');
+            setLoading(false);
         } else {
             const response = await axios.post('/api/patient', {
-                fname, email, phone, dob, gender, address, occupation, emergencyName, emergencyNum, primaryPhysician, insuranceProvider, policyNumber, allergies, currentMedication, familyMedicalHistory, postMedicalHistory, identificationType, identificationNumber, idCopy: "firebase download image url"
+                fname, email, phone, dob, gender, address, occupation, emergencyName, emergencyNum, primaryPhysician, insuranceProvider, policyNumber, allergies, currentMedication, familyMedicalHistory, postMedicalHistory, identificationType, identificationNumber
             });
             if (response.data.success) {
                 toast.success("Registered successfully!");
                 setFieldsDefault();
                 router.push('/');
+                setLoading(false);
+            } else {
+                setLoading(false);
             }
         }
-        setLoading(false);
     };
 
     return (
@@ -461,36 +459,6 @@ const PatientForm = () => {
                                         value={identificationNumber}
                                         onChange={e => setIdentificationNumber(e.target.value)} />
                                     {errors.identificationNumber && <p className="text-red-500 text-sm">{errors.identificationNumber}</p>}
-
-                                </div>
-                                <div className="flex flex-col">
-                                    <label htmlFor="file" className='text-color'>Scanned Copy of Identification Document</label>
-
-                                    <div className="flex items-center justify-center w-full bg">
-                                        <label htmlFor="dropzone-file" className="flex flex-col items-center justify-center w-full h-64 border-2 border-stone-700 border-dashed rounded-lg cursor-pointer">
-                                            <div className="flex flex-col items-center justify-center pt-5 pb-6">
-                                                <svg className="w-8 h-8 mb-4 text-green" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 20 16">
-                                                    <path stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13 13h3a3 3 0 0 0 0-6h-.025A5.56 5.56 0 0 0 16 6.5 5.5 5.5 0 0 0 5.207 5.021C5.137 5.017 5.071 5 5 5a4 4 0 0 0 0 8h2.167M10 15V6m0 0L8 8m2-2 2 2" />
-                                                </svg>
-                                                <p className="mb-2 text-sm text-gray-500 dark:text-gray-400"><span className="font-semibold text-green">Click to upload</span> or drag and drop</p>
-                                                <p className="text-xs text-gray-500 dark:text-gray-400">SVG, PNG, JPG or GIF (MAX. 800x400px)</p>
-                                            </div>
-                                            <input
-                                                id="dropzone-file"
-                                                type="file"
-                                                className="hidden"
-                                                onChange={e => {
-                                                    if (e.target.files && e.target.files[0]) {
-                                                        setIdCopy(e.target.files[0]);
-                                                        console.log(e.target.files[0])
-                                                        console.log(typeof e.target.files[0])
-                                                    }
-                                                }}
-                                            />
-
-                                        </label>
-                                    </div>
-                                    {errors.idCopy && <p className="text-red-500 text-sm">{errors.idCopy}</p>}
 
                                 </div>
                             </div>

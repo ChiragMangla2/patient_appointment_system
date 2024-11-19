@@ -12,10 +12,10 @@ interface IAppointment extends Document {
     createdAt: Date;
 }
 
-var appointmentSchema: Schema<IAppointment> = new Schema<IAppointment>({
+var AppointmentSchema: Schema<IAppointment> = new Schema<IAppointment>({
     patientId:{
         type: mongoose.Schema.Types.ObjectId,
-        ref: 'patient',
+        ref: 'Patient',
         required:true
     },
     drname:{
@@ -46,8 +46,6 @@ var appointmentSchema: Schema<IAppointment> = new Schema<IAppointment>({
     },
 });
 
-const Appointment: Model<IAppointment> = mongoose.models.appointment || mongoose.model<IAppointment>('appointment', appointmentSchema);
+const Appointment = mongoose.models["appointment"] || mongoose.model<IAppointment>('appointment', AppointmentSchema);
 
 export default Appointment;
-
-// export default mongoose.models.appointment || mongoose.model('appointment', appointmentSchema);

@@ -23,7 +23,6 @@ interface PatientPayload {
     postMedicalHistory?: string;
     identificationType?: string;
     identificationNumber?: string;
-    idCopy?: string;
 }
 
 export async function GET(request:NextRequest) {

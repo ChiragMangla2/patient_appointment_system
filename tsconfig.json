@@ -32,7 +32,7 @@
     "**/*.ts",
     "**/*.tsx",
     ".next/types/**/*.ts"
-, "app/api/dashboard/route.ts", "app/context/AppContext.tsx"  ],
+, "app/api/dashboard/route.ts", "app/context/AppContext.tsx", "app/lib/appointment.model.ts"  ],
   "exclude": [
     "node_modules"
   ]

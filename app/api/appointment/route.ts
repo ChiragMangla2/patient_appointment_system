@@ -3,6 +3,7 @@ import { verifyToken } from "@/app/lib/createJwtToken";
 import { connectionStr } from "@/app/lib/db";
 import mongoose from "mongoose";
 import { NextRequest, NextResponse } from "next/server";
+import Patient from "@/app/lib/patient.model";
 
 // Define the structure of the payload
 interface CreateAppointmentPayload {

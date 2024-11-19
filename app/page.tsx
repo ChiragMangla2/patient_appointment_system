@@ -29,7 +29,6 @@ const Login = () => {
     }
     setLoading(false);
     return () => {
-      setLoading(false);
       setFname('');
       setEmail('');
       setPhone('');
@@ -52,6 +51,7 @@ const Login = () => {
     setLoading(true);
     if (validateForm()) {
       toast.error("Details missing");
+      setLoading(false);
     } else {
       const response = await axios.post('/api/login', { fname, email, phone });
       if (response.data.success) {
@@ -59,14 +59,15 @@ const Login = () => {
         setPatientToken(response.data.token);
         toast.success(response.data.message)
         router.push('/appointment-form');
+        setLoading(false);
       } else {
         setFname('');
         setEmail('');
         setPhone('');
         toast.error(response.data.message);
+        setLoading(false);
       }
     }
-    setLoading(false);
   };
 
   // Handle admin login
@@ -82,10 +83,11 @@ const Login = () => {
         setAdminToken(result.data.token);
         toast.success(result.data.message);
         router.push('/dashboard');
+        setLoading(false);
       } else {
         toast.error(result?.data.message);
+        setLoading(false);
       }
-      setLoading(false);
     }
   };
 
