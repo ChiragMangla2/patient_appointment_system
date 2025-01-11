@@ -1,7 +1,5 @@
-import adminModel from "@/app/lib/admin.model";
 import { generateToken } from "@/app/lib/createJwtToken";
-import { connectionStr } from "@/app/lib/db";
-import mongoose from "mongoose";
+import { clientPromise } from "@/app/lib/db";
 import { NextRequest, NextResponse } from "next/server";
 
 // Define the structure of the payload
@@ -27,17 +25,20 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
     }
 
     // Connect to the database
-    await mongoose.connect(connectionStr);
+    const client = await clientPromise;
+    const db = client.db('patientAppointmentSystem');
 
     // Find the admin record
-    const result: Admin | null = await adminModel.findOne();
+    const result = await db.collection('admins').findOne();
 
     if (result) {
       // Check if the pin matches
       if (pin === result.pin) {
         success = true;
-        const token = await generateToken(result._id);
+        const token = await generateToken(result._id.toString());
         return NextResponse.json({ success, token, message: "Admin login success!" });
+      } else {
+        return NextResponse.json({ success, message: "Not Allowed!" });
       }
     }
 

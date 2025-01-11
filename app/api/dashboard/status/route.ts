@@ -1,13 +1,13 @@
-import appointmentModel from "@/app/lib/appointment.model";
-import { connectionStr } from "@/app/lib/db";
-import mongoose from "mongoose";
+import { clientPromise } from "@/app/lib/db";
 import { NextRequest, NextResponse } from "next/server";
+import { ObjectId } from 'mongodb';
 import sendMail from "@/app/lib/sendAppointmentStatusMail"
-// Define an interface for the request payload
+
+
 interface UpdateAppointmentPayload {
   appointmentId: string;
   status: string;
-  reasonForCancellation?:string;
+  reasonForCancellation?: string;
 }
 
 export async function PUT(request: NextRequest): Promise<NextResponse> {
@@ -18,18 +18,20 @@ export async function PUT(request: NextRequest): Promise<NextResponse> {
 
     // Validate payload
     if (appointmentId && status) {
-      // Ensure the database is connected
-      await mongoose.connect(connectionStr);
-      // Update the appointment's status
-      const result = await appointmentModel.findByIdAndUpdate(
-        { _id: appointmentId },
-        { status },
-        { new: true }
-      ).populate("patientId","email")
+      // database is connecte
+      const client = await clientPromise;
+      const db = client.db('patientAppointmentSystem');
 
-      let data = result;
-      data.reasonForCancellation = payload.reasonForCancellation? payload.reasonForCancellation:"";
-      if(result) sendMail(data);
+      // Update the appointment's status
+      const result = await db.collection('appointments').findOneAndUpdate(
+        { _id: new ObjectId(appointmentId) },
+        {$set: { status }},
+        { returnDocument: 'after' }
+      )
+
+      let data:any = result;
+      data.reasonForCancellation = payload.reasonForCancellation ? payload.reasonForCancellation : "";
+      if (result) sendMail(data);
 
       return NextResponse.json({ success: true, result });
     }

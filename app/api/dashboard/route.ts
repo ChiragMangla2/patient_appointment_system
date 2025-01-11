@@ -1,9 +1,7 @@
-import adminModel from "@/app/lib/admin.model";
-import Appointment from "@/app/lib/appointment.model";
 import { verifyToken } from "@/app/lib/createJwtToken";
-import { connectionStr } from "@/app/lib/db";
-import mongoose from "mongoose";
-import { ObjectId } from "mongoose";
+import { clientPromise } from "@/app/lib/db";
+import { ObjectId } from 'mongodb';
+
 import { NextRequest, NextResponse } from "next/server";
 
 interface Payload {
@@ -34,7 +32,9 @@ export interface Appointment {
 
 export async function POST(request: NextRequest) {
   try {
-    await mongoose.connect(connectionStr);
+    
+    const client = await clientPromise;
+    const db = client.db('patientAppointmentSystem');
     const payload: Payload = await request.json();
     const { token } = payload;
 
@@ -54,10 +54,9 @@ export async function POST(request: NextRequest) {
       });
     }
     else {
-
-      await mongoose.connect(connectionStr);
-      const isAdmin = await adminModel.findById(verify.decoded.id).select("-pin");
-
+      
+      const isAdmin = await db.collection('admins').findOne({_id: new ObjectId(verify.decoded.id)},{projection:{pin:0}});
+      
       if (!isAdmin) {
         return NextResponse.json({
           success: false,
@@ -65,11 +64,25 @@ export async function POST(request: NextRequest) {
         });
       }
     }
+    
     const page = parseInt(request.nextUrl.searchParams.get("page") || "1", 10);
     const limit = 10;
-    const result = await Appointment
-      .find()
-      .populate("patientId", "_id fname");
+    const result = await db.collection('appointments')
+    .aggregate([
+      {
+        $lookup:{
+          from:'patients',
+          localField: 'patientId',
+          foreignField:'_id',
+          as: 'patientId'
+        }
+      },
+    {
+      $unwind:{  //unwind is used to destructure populated data from array
+        path: '$patientId'
+      }
+    }
+    ]).sort({ createdAt: -1 }).toArray();
 
     const pending = result?.filter((ele: Appointment | any) => ele.status === "pending").length;
     const confirm = result?.filter((ele: Appointment | any) => ele.status === "confirm").length;

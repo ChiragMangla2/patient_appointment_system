@@ -1,19 +1,13 @@
 import { generateToken } from "@/app/lib/createJwtToken"
 import { NextResponse } from "next/server";
-import { connectionStr } from "@/app/lib/db";
-import mongoose from "mongoose";
+import { clientPromise } from "@/app/lib/db";
 import { NextRequest } from "next/server";
-import Patient from "@/app/lib/patient.model";
 
 type PayloadType = {
     fname: string;
     email: string;
     phone: string;
 };
-
-export async function GET(request: NextRequest) {
-    return NextResponse.json({ success: true, greet: "Hello" });
-}
 
 export async function POST(request: NextRequest) {
     let success: boolean = false;
@@ -24,12 +18,14 @@ export async function POST(request: NextRequest) {
         return NextResponse.json({ success, message: "Details missing" });
 
     } else {
-        await mongoose.connect(connectionStr)
-        let data = await Patient.findOne({ fname: payload.fname, email: payload.email, phone: payload.phone });
+        // connect with db
+        const client = await clientPromise;
+        const db = client.db('patientAppointmentSystem');
+        let data = await db.collection('patients').findOne({ fname: payload.fname, email: payload.email, phone: payload.phone });
         if (data) {
             const id = data._id;
-            const token = await generateToken(id);
-            return NextResponse.json({ success: true, data, token, message:"Login successfully!" });
+            const token = await generateToken(id.toString());
+            return NextResponse.json({ success: true, data, token, message: "Login successfully!" });
         } else {
             return NextResponse.json({ success, message: "User not exist" });
         }

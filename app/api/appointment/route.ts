@@ -1,9 +1,7 @@
-import appointmentModel from "@/app/lib/appointment.model";
 import { verifyToken } from "@/app/lib/createJwtToken";
-import { connectionStr } from "@/app/lib/db";
-import mongoose from "mongoose";
+import { clientPromise } from "@/app/lib/db";
 import { NextRequest, NextResponse } from "next/server";
-import Patient from "@/app/lib/patient.model";
+import { ObjectId } from "mongodb";
 
 // Define the structure of the payload
 interface CreateAppointmentPayload {
@@ -44,19 +42,19 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
     }
 
     // Connect to the database
-    await mongoose.connect(connectionStr);
+    const client = await clientPromise;
+    const db = client.db('patientAppointmentSystem');
 
-    // Create a new appointment
-    const newAppointment = new appointmentModel({
-      patientId: verify.decoded.id,
+    // Add new appointment
+    const result = await db.collection('appointments').insertOne({
+      patientId: new ObjectId(verify.decoded.id),
       drname,
       reasonForApp,
       note,
       selectedDate: new Date(selectedDate), // Convert string to Date
-    });
-
-    // Save the appointment to the database
-    const result = await newAppointment.save();
+      status: 'pending',
+      createdAt: new Date()
+    })
 
     if (result) {
       success = true;

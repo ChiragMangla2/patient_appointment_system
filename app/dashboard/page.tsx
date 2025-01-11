@@ -65,6 +65,7 @@ const dashboard = () => {
                 setTotalCancelData(data?.cancel);
                 setHasNextPage(data?.hasNextPage);
                 setData(data?.data);
+                
             } else {
                 sessionStorage.clear();
                 router.push("/");
@@ -211,10 +212,10 @@ const dashboard = () => {
                                         <td className="flex items-center gap-x-4">
                                             <div className="circle bg-green-800 p-1 lg:p-2 rounded-full font-semibold lg:font-extrabold text-xs lg:text-base">
                                                 {
-                                                    elem.patientId.fname.split(" ").length > 1 ?
+                                                    elem.patientId.fname?.split(" ").length > 1 ?
                                                         elem.patientId.fname.split(" ")[0].charAt(0) + elem.patientId.fname.split(" ")[1].charAt(0)
-                                                        : elem.patientId.fname.split(" ")[0].charAt(0) + elem.patientId.fname.split(" ")[0].charAt(1).toUpperCase()
-                                                }</div>
+                                                        : elem.patientId?.fname?.charAt(0) + elem.patientId.fname?.charAt(1).toUpperCase()
+                                                    }</div>
                                             <div className="text">{elem.patientId.fname}</div>
                                         </td>
                                         <td className="text-xs lg:text-sm">{formatDate(`${elem.selectedDate}`)}</td>
